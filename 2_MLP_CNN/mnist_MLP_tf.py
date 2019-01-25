@@ -18,7 +18,7 @@ mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 #    print ("Label: " + str(mnist.train.labels[i])) # label of i-th element of training data
 #    img = mnist.train.images[i].reshape((28, 28)) # saving in 'img', the reshaped i-th element of the training dataset
 #    plt.imshow(img, cmap='gray') # displaying the image
-#    plt.show()
+#    plt.pause(0.5)
 
 
 DATA_SIZE = 784

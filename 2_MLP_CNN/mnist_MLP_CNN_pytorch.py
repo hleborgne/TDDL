@@ -16,14 +16,14 @@ from torch.autograd import Variable
 
 # import datasets 
 from torchvision import datasets, transforms
-batch_size = 100
 
 trans = transforms.Compose( [ transforms.ToTensor(), transforms.Normalize( (0.1307,),(0.3081,))])
-# trans = transforms.Compose( [ transforms.ToTensor(), transforms.Normalize( (0.5,),(1.0,))])
 
 train_set = datasets.MNIST( './data', train=True, transform=trans, download=True )
 test_set = datasets.MNIST( './data', train=False, transform=trans, download=True )
 
+# define data loaders
+batch_size = 100
 train_loader = torch.utils.data.DataLoader(
                  dataset=train_set,
                  batch_size=batch_size,
@@ -115,7 +115,9 @@ for epoch in xrange(10):
         loss.backward()
         optimizer.step()
         if batch_idx %100 ==0:
-            print 'epoch {} batch {} [{}/{}] training loss: {}'.format(epoch,batch_idx,batch_idx*len(x),len(train_loader.dataset),loss.item())
+            print 'epoch {} batch {} [{}/{}] training loss: {}'
+            .format(epoch,batch_idx,batch_idx*len(x),
+                    len(train_loader.dataset),loss.item())
     # testing
     model.eval()
     correct = 0
@@ -124,8 +126,9 @@ for epoch in xrange(10):
             out = model(x)
             loss = loss_fn(out, target)
             # _, prediction = torch.max(out.data, 1)
-            prediction = out.argmax(dim=1, keepdim=True) # get the index of the max log-probability
+            prediction = out.argmax(dim=1, keepdim=True) # index of the max log-probability
             correct += prediction.eq(target.view_as(prediction)).sum().item()
     taux_classif = 100. * correct / len(test_loader.dataset)
     print 'Accuracy: {}/{} (tx {:.2f}%, err {:.2f}%)\n'.format(correct,
      len(test_loader.dataset), taux_classif, 100.-taux_classif)
+
