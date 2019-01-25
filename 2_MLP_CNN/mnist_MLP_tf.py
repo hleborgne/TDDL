@@ -60,7 +60,7 @@ correct_prediction = tf.equal(tf.argmax(Y_p,1), tf.argmax(Y,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # >>>> Train the network
-for epoch in range(20000): 
+for epoch in range(20000):
    batch = mnist.train.next_batch(50) # every batch of 50 images
    if epoch%250 == 0:
       train_accuracy = accuracy.eval(feed_dict={X:batch[0], Y: batch[1]})
@@ -71,11 +71,11 @@ for epoch in range(20000):
 # > Add ops to save and restore all the variables.
 saver = tf.train.Saver()
 # > Variables to save 
-tf.add_to_collection('vars', w_h1) 
+tf.add_to_collection('vars', w_h1)
 tf.add_to_collection('vars', w_h2)
 tf.add_to_collection('vars', w_o)
 # > Save the variables to disk 
-save_path = saver.save(sess, "./tensorflow_model.ckpt") 
+save_path = saver.save(sess, "./tensorflow_model.ckpt")
 print("Model saved in file: %s" % save_path)
 
 

@@ -23,8 +23,8 @@ y_ = tf.placeholder(tf.float32, shape=[None, 10])
 
 # >>>> Weight variable function
 """
-Randomly initializes the weights of a variable of 
-shape = 'shape_var'. This function returns a tensor of 
+Randomly initializes the weights of a variable of
+shape = 'shape_var'. This function returns a tensor of
 the specified shape filled with random values.
 """
 def weight_variable(shape_var):
@@ -33,7 +33,7 @@ def weight_variable(shape_var):
 
 # >>>> Bias variable function
 """
-Creates a constant tensor of shape = 'shape_bias' with all 
+Creates a constant tensor of shape = 'shape_bias' with all
 elements equal to the value 0.1.
 """
 def bias_variable(shape_bias):
@@ -42,7 +42,7 @@ def bias_variable(shape_bias):
 
 # >>>> Conv2d function
 """
-Computes the convolution between a filter W and an image x. 
+Computes the convolution between a filter W and an image x.
 Parameters: stride=1, padding=0.
 """
 def conv2d(x, W):
@@ -50,7 +50,7 @@ def conv2d(x, W):
 
 # >>>> Max-pooling function
 """
-Computes the max-pooling for every patches of size 2x2 of an 
+Computes the max-pooling for every patches of size 2x2 of an
 input image x.
 """
 def max_pool_2x2(x):
@@ -60,39 +60,39 @@ def max_pool_2x2(x):
 # >>>> Reshape input data vectors 
 """
 Reshape a vector of size 784x1 into a matrix of size 28x28x1.
-The parameter '-1' indicates that the size of the dimension at 
+The parameter '-1' indicates that the size of the dimension at
 that index of the parameter, remains the same.
 """
-x_image = tf.reshape(x, [-1,28,28,1]) 
+x_image = tf.reshape(x, [-1,28,28,1])
 
 # >>>> Convolutional layer 1
 """
 Random initialization of the weights W_conv1 (filters of conv1)
-This layer will compute the convolution of 32 filters (of size 5x5) 
-with the input image (third dimension = 1 indicates that the input 
+This layer will compute the convolution of 32 filters (of size 5x5)
+with the input image (third dimension = 1 indicates that the input
 tensor is one image, corresponding to the input grayscale images).
 """
-W_conv1 = weight_variable([5, 5, 1, 32]) 
+W_conv1 = weight_variable([5, 5, 1, 32])
 
 # > Bias of convolutional layer 1
 """
 Initialize the bias of conv-layer 1 with a constant value of 0.1.
-The value 32 indicates that we have 32 filters in conv1 and 
+The value 32 indicates that we have 32 filters in conv1 and
 thus, we will add a bias in each of these filters.
 """
-b_conv1 = bias_variable([32]) 
+b_conv1 = bias_variable([32])
 
 # > Computing the output values of conv1 (feature maps)
 """
 This will output a set of 32 feature maps of size 28x28x1.
-Each feature map will be the output of the convolution of 
+Each feature map will be the output of the convolution of
 one filter (among the 32 filters) with the input image.
 """
-h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1) 
+h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
 
 # > Computing the output values of max-pool 1 (feature maps)
 """
-Application of the max-pooling function on the 32 feature-maps (of size 28x28) 
+Application of the max-pooling function on the 32 feature-maps (of size 28x28)
 obtained from previous convolutional-layer.
 This will output 32 feature-maps of size 14x14 (because we max-pool every 2x2 patches).
 """
@@ -101,9 +101,9 @@ h_pool1 = max_pool_2x2(h_conv1)
 # >>>> Convolutional layer 2
 """
 Random initialization of the weights W_conv2 (filters of conv2).
-This layer will compute the convolution of 64 filters (of size 5x5) 
-with the input images (third dimension = 32 indicates that the input 
-tensor is a set of 32 images, corresponding to the feature maps of 
+This layer will compute the convolution of 64 filters (of size 5x5)
+with the input images (third dimension = 32 indicates that the input
+tensor is a set of 32 images, corresponding to the feature maps of
 size 14x14 obtained after max-pool1).
 """
 W_conv2 = weight_variable([5, 5, 32, 64]) # declaration of the weights of conv2
@@ -113,8 +113,8 @@ b_conv2 = bias_variable([64]) # declaration of the weights of bias of conv2
 """
 output: 64 feature maps of size 14x14x1
 """
-h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2) 
- 
+h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+
 # > Computing the output values of max-pool2 (feature maps)
 """
 output: 64 images of size 7x7x1

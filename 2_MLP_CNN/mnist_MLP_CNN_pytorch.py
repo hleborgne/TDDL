@@ -88,7 +88,7 @@ class CNNNet(nn.Module):
         x = F.relu(self.conv_2(x))
         # x = F.relu(self.drop(self.conv_2(x)))
         x = F.max_pool2d(x, 2,2)
-        x = x.view(-1,4*4*NUM_CONV_2) 
+        x = x.view(-1,4*4*NUM_CONV_2)
         x = F.relu(self.fc_1(x))
         x = self.fc_2(x)
         return x
@@ -96,8 +96,8 @@ class CNNNet(nn.Module):
         # return F.log_softmax(x, dim=1)
 
 # define model (choose MLP or CNN)
-# model = MLPNet() 
-model = CNNNet()
+model = MLPNet()
+# model = CNNNet()
 
 # optimization hyperparameters
 optimizer = torch.optim.SGD(model.parameters(), lr = 0.05) # try lr=0.01, momentum=0.9
