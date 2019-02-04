@@ -1,7 +1,7 @@
 I - Lecture les données
 =======================
 
-Pour lire des données TensorFlow je vous recommande d'utiliser l'api `tf.data`. De très bons tutoriaux sur cette api existent sur le site de TensorFlow:
+Pour lire des données TensorFlow je vous recommande d'utiliser l'api `tf.data`. De très bons tutoriaux existent sur le site de TensorFlow:
 
  - https://www.tensorflow.org/guide/datasets 
  - https://www.tensorflow.org/guide/performance/datasets 
@@ -11,7 +11,7 @@ Dans les grandes lignes, cette api utilise deux classes `tf.data.Dataset` et `tf
 Recuperer MNIST
 ---------------
 
-MNIST (http://yann.lecun.com/exdb/mnist/) est une base de données d'images en niveau de gris de chiffres manuscrits (de taille 28x28). elle contient 60 000 images de train et de 10 000 images de test. C'est une base de données très utilisée dans le domaine de l'IA surtout dans l'enseignement ou dans la recherche (très) expérimentale (car assez facile).
+MNIST (http://yann.lecun.com/exdb/mnist/) est une base de données d'images en niveau de gris de chiffres manuscrits (de taille 28x28). elle contient 60 000 images de train et de 10 000 images de test. C'est une base de données très utilisée dans le domaine de l'IA surtout dans l'enseignement et dans la recherche (très) expérimentale.
 
 Il est possible de récupérer les données directement dans TensorFlow en une ligne de code:
 
@@ -33,7 +33,7 @@ dataset = tf.data.Dataset.from_tensor_slices((x, y))
 Utiliser l'api `tf.data` 
 ------------------------
 
-puis s'il s'agit du train set, on le mélange et on le 'répète' afin de pouvoir itérer plusieurs fois dessus:
+Puis s'il s'agit du train set, on le mélange et on le 'répète' afin de pouvoir itérer plusieurs fois dessus:
 
 ```python
 dataset = dataset.apply(
@@ -70,14 +70,13 @@ iterator = dataset.make_one_shot_iterator()
 II - Construire un modèle
 =========================
 
-Pour construire un modèle avec TensorFlow, le plus pratique est d'utiliser l'api 'haut niveau' de TensorFlow: `tf.keras`. Bien sûr il est possible de recoder toutes les couches d'un réseau mais c'est une perte de temps. Peut-être serez-vous amenés à coder vos propres couches expérimentales un jour, mais là encore, l'api `tf.keras` permet la creation de nouveaux types de couches.
+Pour construire un modèle avec TensorFlow, le plus pratique est d'utiliser l'api 'haut niveau' de TensorFlow: `tf.keras`. Bien sûr il est possible de recoder toutes les couches d'un réseau mais c'est souvent une perte de temps. Peut-être serez-vous amenés à coder vos propres couches expérimentales un jour, mais là encore, l'api `tf.keras` permet la creation de nouveaux types de couches https://keras.io/layers/writing-your-own-keras-layers/.
 
 Il existe plusieurs façon de créer un modèle avec `tf.keras` en créant une classe fille de `tf.keras.Model` ou en utilisant l'api fonctionnelle de création de modèle. Nous allons détailler cette dernière car elle me paraît plus intuitive. il existe un tutoriel pour créer des modèles avec `tf.keras` sur le site de TensorFLow: https://www.tensorflow.org/api_docs/python/tf/keras/models/Model. Ici je vais tenter d'expliquer brièvement l'essentiel.
 
 
 Creation d'un modèle avec une approche fonctionnelle
 ----------------------------------------------------
-
 
 Rien de mieux qu'un example pour comprendre:
 
@@ -95,9 +94,9 @@ y = tf.keras.layers.Dense(units=10)(h)
 model = tf.keras.Model(inputs=x, outputs=y)
 ```
 
-La seule contrainte, c'est qu'entre l'entrée et la sortie du modèle il n'y ait QUE des `tf.keras.layers.Layer` comme dans l'exemple. Cependant vous aurez parfois besoin d'une opération qui ne s'exprime pas en 'layer', heureusement keras met à disposition une layer bien pratique: `tf.keras.layers.Lambda` dont l'utilisation est assez explicite:
+La seule contrainte, est lq suivante: entre l'entrée et la sortie du modèle il ne doit y avoir QUE des `tf.keras.layers.Layer` (comme dans l'exemple). Cependant, vous aurez parfois besoin d'une opération qui ne s'exprime pas en 'layer', heureusement keras met à disposition une layer bien pratique: `tf.keras.layers.Lambda` dont l'utilisation est assez explicite:
 
-```python
+/```python
 x = tf.keras.layers.Lambda(ma_fonction)(x)
 ```
 
@@ -107,7 +106,7 @@ Il est aussi possible de créer ses propres layers en créant une classe fille d
 III - Apprendre les poids du modèle
 ===================================
 
-pour entrainer notre modèle il va nous falloir définir une loss et un optimiseur;
+Pour entrainer notre modèle il va nous falloir définir une loss et un optimiseur;
 
 ```python
 training = tf.placeholder_with_default(False, [])
@@ -119,7 +118,7 @@ optimizer = tf.train.AdamOptimizer()
 train_op = optimizer.minimize(loss)
 ```
 
-NB: la variable `training` sert à indiquer au modèle s'il est en phase d'apprentissage ou non (s'il doit utiliser le dropout, comment doit se comporter la batch normalisation, etc...)
+NB: la variable `training` sert à indiquer au modèle s'il est en phase d'apprentissage ou non (s'il faut utiliser ou non le dropout, comment doit se comporter la batch normalisation, etc...)
 
 Une fois ces opérations définies, il ne reste plus qu'à entrainer le réseau. Pour cela on crée une `tf.Session`, on initialise les variables et on effectue la boucle de train:
 
@@ -133,4 +132,4 @@ with tf.Session() as sess:
 
 ```
 
-et voilà ! Pour suivre l'avancement du training et pour évaluer le modèle référez-vous au code complet que l'on vous a fournis.
+Et voilà ! Pour suivre l'avancement du training et pour évaluer le modèle référez-vous au code complet que l'on vous a fourni.
