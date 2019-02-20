@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -18,7 +19,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 # default project structure
 
 # project
-#   +--code
+#   +--code-tf
 #   |   +--main.py
 #   |   +--README_tf.md
 #   |
@@ -32,6 +33,10 @@ tf.logging.set_verbosity(tf.logging.INFO)
 #       +--highway
 #           +--image.jpg
 #           +--...
+
+# NB: vous pouvez faire un lien dynamique vers les données:
+#           cd project
+#           ln -s /path/to/data data
 
 # ======================== Define some usefull flags ===========================
 
