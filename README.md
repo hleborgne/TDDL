@@ -8,6 +8,7 @@ Initiation à la syntaxe et aux bases de [Tensorflow](https://www.tensorflow.org
 Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP et un CNN
 
 ## TP 3: transfer learning et finetuning
+Transfert d'apprentissage entre ImageNet et un petit problème cible. Étude du réglage fin du réseau.
 
 ## TP 4: LSTM
 Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un (bi) LSTM
