@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import os
 import numpy as np
-import tensorflow as tf 
+import tensorflow as tf
 import tensorflow_hub as hub
 
 from operator import itemgetter
@@ -54,9 +54,9 @@ flags.DEFINE_bool('fine_tune', False, '')
 # >> python main.py --batch_size=200 --final_step=2000
 
 # ======================== Load a pre-trained network ==========================
- 
+
 ResNet50 = hub.Module(
-    "https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1", 
+    "https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1",
     trainable=FLAGS.fine_tune,
     # tags=set() is not FLAGS.fine_tune else {'train'} # à décommenter à vos risques et périls ! 
     )
@@ -97,7 +97,7 @@ for image_filename, image_label in zip(image_filenames, image_labels):
 
 def make_iterator(filenames, labels, batch_size, shuffle_and_repeat=False):
     """function that creates a `tf.data.Iterator` object"""
-    dataset = tf.data.Dataset.from_tensor_slices((filenames, labels))  
+    dataset = tf.data.Dataset.from_tensor_slices((filenames, labels))
     if shuffle_and_repeat:
         dataset = dataset.apply(
             tf.data.experimental.shuffle_and_repeat(buffer_size=1000))
@@ -109,18 +109,18 @@ def make_iterator(filenames, labels, batch_size, shuffle_and_repeat=False):
         image = tf.cast(image, tf.float32)
         image = image / 256
         return {'image': image, 'label': label}
-    
+
     dataset = dataset.apply(tf.data.experimental.map_and_batch(
         map_func=parse, batch_size=batch_size, num_parallel_batches=8))
-    
+
     return dataset.make_one_shot_iterator()
 
-train_iterator = make_iterator(train_image_filenames, train_image_labels, 
-    batch_size=FLAGS.batch_size, shuffle_and_repeat=True)    
-valid_iterator = make_iterator(valid_image_filenames, valid_image_labels, 
-    batch_size=FLAGS.batch_size)    
-test_iterator = make_iterator(test_image_filenames, test_image_labels, 
-    batch_size=FLAGS.batch_size)    
+train_iterator = make_iterator(train_image_filenames, train_image_labels,
+    batch_size=FLAGS.batch_size, shuffle_and_repeat=True)
+valid_iterator = make_iterator(valid_image_filenames, valid_image_labels,
+    batch_size=FLAGS.batch_size)
+test_iterator = make_iterator(test_image_filenames, test_image_labels,
+    batch_size=FLAGS.batch_size)
 
 # ====================== Do the actual transfer learning =======================
 
@@ -130,7 +130,7 @@ inputs = K.layers.Input(shape=[height, width, 3])
 feature_vector = K.layers.Lambda(ResNet50)(inputs)
 outputs = K.layers.Dense(units=3)(feature_vector)
 
-final_model = K.Model(inputs=inputs, outputs=outputs) 
+final_model = K.Model(inputs=inputs, outputs=outputs)
 
 # Create training operations
 
@@ -183,7 +183,7 @@ with tf.Session() as sess:
             sess.run(valid_accuracy_op)
         except tf.errors.OutOfRangeError:
             break
-    
+
     valid_accuracy_val = sess.run(valid_accuracy)
 
     tf.logging.info('validation_accuracy: {}'.format(valid_accuracy_val))
