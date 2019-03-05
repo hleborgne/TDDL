@@ -14,6 +14,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+# we will GPU if available, otherwise CPU
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(device)
+
 # import datasets 
 from torchvision import datasets, transforms
 
@@ -33,8 +37,8 @@ test_loader = torch.utils.data.DataLoader(
                 batch_size=batch_size,
                 shuffle=False)
 
-print 'total training batch number: {}'.format(len(train_loader))
-print 'total testing batch number: {}'.format(len(test_loader))
+print('total training batch number: {}'.format(len(train_loader)))
+print('total testing batch number: {}'.format(len(test_loader)))
 
 # display some images
 # for an alternative see https://pytorch.org/tutorials/advanced/neural_style_tutorial.html
@@ -97,7 +101,9 @@ class CNNNet(nn.Module):
 
 # define model (choose MLP or CNN)
 model = MLPNet()
-# model = CNNNet()
+#model = CNNNet()
+
+model.to(device) # puts model on GPU / CPU
 
 # optimization hyperparameters
 optimizer = torch.optim.SGD(model.parameters(), lr = 0.05) # try lr=0.01, momentum=0.9
@@ -109,26 +115,26 @@ for epoch in xrange(10):
     model.train() # mode "train" agit sur "dropout" ou "batchnorm"
     for batch_idx, (x, target) in enumerate(train_loader):
         optimizer.zero_grad()
-        x, target = Variable(x), Variable(target)
+        x, target = Variable(x).to(device), Variable(target).to(device)
         out = model(x)
         loss = loss_fn(out, target)
         loss.backward()
         optimizer.step()
         if batch_idx %100 ==0:
-            print 'epoch {} batch {} [{}/{}] training loss: {}'
-            .format(epoch,batch_idx,batch_idx*len(x),
-                    len(train_loader.dataset),loss.item())
+            print('epoch {} batch {} [{}/{}] training loss: {}'.format(epoch,batch_idx,batch_idx*len(x),
+                    len(train_loader.dataset),loss.item()))
     # testing
     model.eval()
     correct = 0
     with torch.no_grad():
         for batch_idx, (x, target) in enumerate(test_loader):
+	    x, target = x.to(device), target.to(device)
             out = model(x)
             loss = loss_fn(out, target)
             # _, prediction = torch.max(out.data, 1)
             prediction = out.argmax(dim=1, keepdim=True) # index of the max log-probability
             correct += prediction.eq(target.view_as(prediction)).sum().item()
     taux_classif = 100. * correct / len(test_loader.dataset)
-    print 'Accuracy: {}/{} (tx {:.2f}%, err {:.2f}%)\n'.format(correct,
-     len(test_loader.dataset), taux_classif, 100.-taux_classif)
+    print('Accuracy: {}/{} (tx {:.2f}%, err {:.2f}%)\n'.format(correct,
+     len(test_loader.dataset), taux_classif, 100.-taux_classif))
 
