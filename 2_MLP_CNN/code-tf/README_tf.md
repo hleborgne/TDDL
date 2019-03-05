@@ -96,7 +96,7 @@ model = tf.keras.Model(inputs=x, outputs=y)
 
 La seule contrainte, est lq suivante: entre l'entrée et la sortie du modèle il ne doit y avoir QUE des `tf.keras.layers.Layer` (comme dans l'exemple). Cependant, vous aurez parfois besoin d'une opération qui ne s'exprime pas en 'layer', heureusement keras met à disposition une layer bien pratique: `tf.keras.layers.Lambda` dont l'utilisation est assez explicite:
 
-/```python
+```python
 x = tf.keras.layers.Lambda(ma_fonction)(x)
 ```
 
