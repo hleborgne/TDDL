@@ -128,7 +128,7 @@ for epoch in xrange(10):
     correct = 0
     with torch.no_grad():
         for batch_idx, (x, target) in enumerate(test_loader):
-	    x, target = x.to(device), target.to(device)
+            x, target = x.to(device), target.to(device)
             out = model(x)
             loss = loss_fn(out, target)
             # _, prediction = torch.max(out.data, 1)
