@@ -2,6 +2,7 @@
 # Useful link and source: https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
 # (Or more generally https://pytorch.org/tutorials/)
 # Dataset from https://www.pyimagesearch.com/2019/01/14/machine-learning-in-python/
+#              FlickrLogos: www.multimedia-computing.de/flickrlogos
 
 import torch
 import torchvision
@@ -85,7 +86,7 @@ optimizer = optim.SGD(resnet.fc.parameters(), lr=0.001, momentum=0.9)
 PRINT_LOSS = False
 
 # fonction classique d'entraînement d'un modèle, voir TDs précédents
-def train_model(model, loader, optimizer, criterion, n_epochs=10):
+def train_(model, loader, optimizer, criterion, n_epochs=10):
     for epoch in range(n_epochs): # à chaque epochs
         print("EPOCH % i" % epoch)
         for i, data in enumerate(loader): # on itère sur les minibatchs via le loader

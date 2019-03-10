@@ -81,7 +81,7 @@ with tf.Session() as sess:
     # initialize variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
-    
+
     # create handles to choose the dataset to use
     train_switch = sess.run(train_iterator.string_handle())
     valid_switch = sess.run(valid_iterator.string_handle())
@@ -93,21 +93,21 @@ with tf.Session() as sess:
 
         sess.run(train_op, {
             dataset_switch: train_switch,
-            training: True,    
+            training: True,
         })
 
         if step % FLAGS.info_freq == 0:
             loss_val, accuracy_val = sess.run([loss, accuracy], {dataset_switch: train_switch})
             tf.logging.info(
                 'step {} - loss: {:7.5f} - accuracy: {:7.5f}'.format(step, loss_val, accuracy_val))
-    
+
     # validation
     while True: # iterate on the whole validation set
         try:
             sess.run(valid_accuracy_op, {dataset_switch: valid_switch})
         except tf.errors.OutOfRangeError:
             break
-    
+
     valid_accuracy_val = sess.run(valid_accuracy)
 
     tf.logging.info('validation_accuracy: {}'.format(valid_accuracy_val))
