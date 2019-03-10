@@ -81,7 +81,8 @@ test_image_filenames, test_image_labels  = [], []
 for image_filename, image_label in zip(image_filenames, image_labels):
 
     # 80% of data in training set, 10% in validation set and 10% in test set
-    x = np.random.choice(['train', 'valid', 'test'], p=[0.8,0.1,0.1])
+    # 56.25% of data in training set, 18.75% in validation set and 25% in test set
+    x = np.random.choice(['train', 'valid', 'test'], p=[0.75*0.75,0.75*0.25,0.25])
 
     if x == 'train':
         train_image_filenames.append(image_filename)

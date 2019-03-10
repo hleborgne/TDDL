@@ -75,7 +75,7 @@ for param in resnet.parameters():
     param.requires_grad = False
 
 # on remplace la dernière couche fully connected à 1000 sorties (classes d'ImageNet) par une fully connected à 3 sorties (nos classes).
-# par défaut, les gradients des paramètres cette couche seront biencalculés
+# par défaut, les gradients des paramètres cette couche seront bien calculés
 resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=3, bias=True)
 resnet.to(device) # on utilise le GPU / CPU en fonction de ce qui est disponible
 
