@@ -58,7 +58,7 @@ flags.DEFINE_bool('fine_tune', False, '')
 ResNet50 = hub.Module(
     "https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1",
     trainable=FLAGS.fine_tune,
-    # tags=set() is not FLAGS.fine_tune else {'train'} # à décommenter à vos risques et périls ! 
+    # tags=set() if not FLAGS.fine_tune else {'train'} # à décommenter à vos risques et périls ! 
     )
 height, width = hub.get_expected_image_size(ResNet50)
 
