@@ -51,7 +51,9 @@ flags.DEFINE_string('data_dir', '../data', '')
 flags.DEFINE_bool('fine_tune', False, '')
 
 # example:
-# >> python main.py --batch_size=200 --final_step=2000
+# >> python main.py --batch_size=16 --final_step=20 --info_freq=1
+#
+# you can try with larger batch_size or more steps for better performances (but it's slower)
 
 # ======================== Load a pre-trained network ==========================
 
@@ -175,7 +177,7 @@ with tf.Session() as sess:
         if step % FLAGS.info_freq == 0:
             loss_val, accuracy_val = sess.run([loss, accuracy])
             tf.logging.info(
-                'step {} - loss: {:7.5f} - accuracy: {:7.5f}'.format(step, loss_val, accuracy_val))
+                'step {} - loss: {:7.5f} - val. accuracy: {:7.5f}'.format(step, loss_val, accuracy_val))
 
     # validation
 
