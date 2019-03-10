@@ -30,7 +30,8 @@ data_transforms = transforms.Compose([
 ])
 
 # on lit une première fois les images du dataset
-image_directory = "python-machine-learning/3scenes/" # à adapter en fonction de l'endroit où sont stockées les données
+#image_directory = "python-machine-learning/3scenes/" # à adapter en fonction de l'endroit où sont stockées les données
+image_directory = "../data/" # à adapter en fonction de l'endroit où sont stockées les données
 dataset_full = datasets.ImageFolder(image_directory, data_transforms)
 loader_full = torch.utils.data.DataLoader(dataset_full, batch_size=16, shuffle=True, num_workers=4)
 
@@ -67,6 +68,7 @@ import torch.optim as optim
 
 # on utilisera le GPU (beaucoup plus rapide) si disponible, sinon on utilisera le CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+#device = torch.device("cpu") # forcer en CPU s'il y a des problèmes de mémoire GPU (+ être patient...)
 
 # on indique qu'il est inutile de calculer les gradients des paramètres de resnet
 for param in resnet.parameters():
@@ -86,7 +88,7 @@ optimizer = optim.SGD(resnet.fc.parameters(), lr=0.001, momentum=0.9)
 PRINT_LOSS = False
 
 # fonction classique d'entraînement d'un modèle, voir TDs précédents
-def train_(model, loader, optimizer, criterion, n_epochs=10):
+def train_model(model, loader, optimizer, criterion, n_epochs=10):
     for epoch in range(n_epochs): # à chaque epochs
         print("EPOCH % i" % epoch)
         for i, data in enumerate(loader): # on itère sur les minibatchs via le loader
