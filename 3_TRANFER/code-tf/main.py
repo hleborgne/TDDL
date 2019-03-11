@@ -13,7 +13,8 @@ from operator import itemgetter
 K = tf.keras
 
 
-np.random.seed(43) # necessary to make the results reproductible
+np.random.seed(42) # to make the results reproductible
+tf.random.set_random_seed(43) # to make the results reproductible 
 tf.logging.set_verbosity(tf.logging.INFO)
 
 # default project structure
@@ -27,9 +28,9 @@ tf.logging.set_verbosity(tf.logging.INFO)
 #       +--coast
 #       |   +--images.jpg
 #       |   +--...
-#       +--forest
+#       +--forest--
 #       |   +--images.jpg
-#       |   +--...
+#       |   +--.
 #       +--highway
 #           +--image.jpg
 #           +--...
@@ -71,6 +72,7 @@ image_filenames = []
 image_labels = []
 for label, category in enumerate(['coast', 'forest', 'highway']):
     image_names = os.listdir(os.path.join(FLAGS.data_dir, category))
+    image_names = sorted(image_names) # to make the results reproductibles
     image_filenames += [os.path.join(
         FLAGS.data_dir, category, image_name) for image_name in image_names]
     image_labels += [label] * len(image_names)
@@ -175,9 +177,9 @@ with tf.Session() as sess:
         sess.run(train_op)
 
         if step % FLAGS.info_freq == 0:
-            loss_val, accuracy_val = sess.run([loss, accuracy])
+            loss_value, accuracy_value = sess.run([loss, accuracy])
             tf.logging.info(
-                'step {} - loss: {:7.5f} - val. accuracy: {:7.5f}'.format(step, loss_val, accuracy_val))
+                'step {} - loss: {:7.5f} - accuracy: {:7.5f}'.format(step, loss_value, accuracy_value))
 
     # validation
 
@@ -187,6 +189,6 @@ with tf.Session() as sess:
         except tf.errors.OutOfRangeError:
             break
 
-    valid_accuracy_val = sess.run(valid_accuracy)
+    valid_accuracy_value = sess.run(valid_accuracy)
 
-    tf.logging.info('validation_accuracy: {}'.format(valid_accuracy_val))
+    tf.logging.info('validation_accuracy: {}'.format(valid_accuracy_value))
