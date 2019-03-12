@@ -119,7 +119,10 @@ def make_iterator(filenames, labels, batch_size, shuffle_and_repeat=False):
     dataset = dataset.apply(tf.data.experimental.map_and_batch(
         map_func=parse, batch_size=batch_size, num_parallel_batches=8))
 
-    return dataset.make_one_shot_iterator()
+    if shuffle_and_repeat:
+        return dataset.make_one_shot_iterator()
+    else:
+        return dataset.make_initializable_iterator()
 
 train_iterator = make_iterator(train_image_filenames, train_image_labels,
     batch_size=FLAGS.batch_size, shuffle_and_repeat=True)
@@ -163,7 +166,10 @@ valid_images, valid_labels = itemgetter('image', 'label')(valid_features)
 valid_logits = final_model(valid_images)
 
 valid_predictions = tf.cast(tf.argmax(valid_logits, axis=-1), tf.int32)
-valid_accuracy, valid_accuracy_op = tf.metrics.accuracy(valid_labels, valid_predictions)
+
+valid_accuracy, valid_accuracy_op = tf.metrics.accuracy(valid_labels, valid_predictions, name='valid_accuracy')
+valid_running_vars = tf.get_collection(tf.GraphKeys.LOCAL_VARIABLES, scope='valid_accuracy') # to measure validation accuracy during training
+valid_running_vars_initializer = tf.variables_initializer(var_list=valid_running_vars)
 
 # Create a metric to compute the accuracy on the test set 
 
@@ -173,7 +179,10 @@ test_images, test_labels = itemgetter('image', 'label')(test_features)
 test_logits = final_model(test_images)
 
 test_predictions = tf.cast(tf.argmax(test_logits, axis=-1), tf.int32)
-test_accuracy, test_accuracy_op = tf.metrics.accuracy(test_labels, test_predictions)
+
+test_accuracy, test_accuracy_op = tf.metrics.accuracy(test_labels, test_predictions, name='test_accuracy')
+test_running_vars = tf.get_collection(tf.GraphKeys.LOCAL_VARIABLES, scope='test_accuracy') # to measure validation accuracy during training
+test_running_vars_initializer = tf.variables_initializer(var_list=test_running_vars)
 
 # ============================= Train the model ================================
 
@@ -194,6 +203,8 @@ with tf.Session() as sess:
         # validation
         # FIXME reinitialisation de l'iterator???
         if step % FLAGS.info_valid_freq == 0:
+            sess.run(valid_running_vars_initializer) # reinitialize accuracy 
+            sess.run(valid_iterator.initializer)
             while True:
                 try:
                     sess.run(valid_accuracy_op)
@@ -202,7 +213,9 @@ with tf.Session() as sess:
 
             valid_accuracy_value = sess.run(valid_accuracy)
             tf.logging.info('validation_accuracy: {}'.format(valid_accuracy_value))
+            
     # test
+    sess.run(test_iterator.initializer)
     while True:
         try:
             sess.run(test_accuracy_op)
