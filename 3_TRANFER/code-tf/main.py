@@ -200,8 +200,8 @@ with tf.Session() as sess:
             loss_value, accuracy_value = sess.run([loss, accuracy])
             tf.logging.info(
                 'step {} - loss: {:7.5f} - train accuracy: {:7.5f}'.format(step, loss_value, accuracy_value))
+        
         # validation
-        # FIXME reinitialisation de l'iterator???
         if step % FLAGS.info_valid_freq == 0:
             sess.run(valid_running_vars_initializer) # reinitialize accuracy 
             sess.run(valid_iterator.initializer)
