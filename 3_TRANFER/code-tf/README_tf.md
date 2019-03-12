@@ -100,3 +100,9 @@ Manque de mémoire ?
 -------------------
 
 Si vous rencontrez des problèmes de performance sur votre machine, vous pouvez essayer d'utiliser le module https://tfhub.dev/google/imagenet/mobilenet_v2_035_128/feature_vector/2, c'est un réseau beaucoup plus petit qui prend en entrée des images de taille 128x128 et retourne un feature-vector de dimension 1280. Si vous lisez ce paragraphe alors que tout marchait bien jusqu'à présent, rien de plus normal. Le fine-tuning nécessite plus de mémoire que le transfer learning car il rend nécessaire le calcul du gradient dans le réseau pré-entrainé et donc la sauvegarde en mémoire des activations des couches intermédiaires de ce dernier.
+
+
+Version tensorflow 2.0
+======================
+Le programme `main_tf-2.0.py` est adapté pour la version 2 de Tensorflow. Elle permet notamment de calculer les performances de manière plus pratique.
+
