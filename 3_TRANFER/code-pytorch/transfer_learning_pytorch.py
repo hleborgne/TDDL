@@ -59,7 +59,7 @@ dataset_test = datasets.ImageFolder(image_directory, data_transforms)
 dataset_test.samples = samples_test
 dataset_test.imgs = samples_test
 
-torch.manual_seed(42L)
+torch.manual_seed(42)
 
 # Transfert d'apprentissage
 
@@ -99,14 +99,14 @@ def train_model(model, loader, optimizer, criterion, n_epochs=10):
             
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
-		print(loss.item())
+                print(loss.item())
             
             loss.backward() # on effectue la backprop pour calculer les gradients
             optimizer.step() # on update les gradients en fonction des paramètres
 
 print("Apprentissage en transfer learning")
 resnet.train(True) # pas indispensable ici, mais bonne pratique de façon général : permet notamment d'activer / désactiver le dropout en fonction de si on entraîne ou si on teste le modèle
-torch.manual_seed(42L)
+torch.manual_seed(42)
 train_model(resnet, loader_train, optimizer, criterion, n_epochs=10)
 
 # on définit une fonction d'évaluation
@@ -148,7 +148,7 @@ optimizer = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
 # on ré-entraîne
 print("Apprentissage avec fine-tuning")
 resnet.train(True)
-torch.manual_seed(42L)
+torch.manual_seed(42)
 train_model(resnet, loader_train, optimizer, criterion, n_epochs=10)
 
 # on ré-évalue les performances
