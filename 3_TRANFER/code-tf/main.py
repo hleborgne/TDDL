@@ -48,6 +48,7 @@ flags.DEFINE_float('learning_rate', 0.001, '')
 flags.DEFINE_integer('initial_step', 0, '')
 flags.DEFINE_integer('final_step', -1, 'set to `-1` to train indefinitely')
 flags.DEFINE_integer('info_freq', 10, '')
+flags.DEFINE_integer('info_valid_freq', 5, '')
 flags.DEFINE_string('data_dir', '../data', '')
 flags.DEFINE_bool('fine_tune', False, '')
 
@@ -164,6 +165,16 @@ valid_logits = final_model(valid_images)
 valid_predictions = tf.cast(tf.argmax(valid_logits, axis=-1), tf.int32)
 valid_accuracy, valid_accuracy_op = tf.metrics.accuracy(valid_labels, valid_predictions)
 
+# Create a metric to compute the accuracy on the test set 
+
+test_features = test_iterator.get_next()
+test_images, test_labels = itemgetter('image', 'label')(test_features)
+
+test_logits = final_model(test_images)
+
+test_predictions = tf.cast(tf.argmax(test_logits, axis=-1), tf.int32)
+test_accuracy, test_accuracy_op = tf.metrics.accuracy(test_labels, test_predictions)
+
 # ============================= Train the model ================================
 
 with tf.Session() as sess:
@@ -179,16 +190,24 @@ with tf.Session() as sess:
         if step % FLAGS.info_freq == 0:
             loss_value, accuracy_value = sess.run([loss, accuracy])
             tf.logging.info(
-                'step {} - loss: {:7.5f} - accuracy: {:7.5f}'.format(step, loss_value, accuracy_value))
+                'step {} - loss: {:7.5f} - train accuracy: {:7.5f}'.format(step, loss_value, accuracy_value))
+        # validation
+        # FIXME reinitialisation de l'iterator???
+        if step % FLAGS.info_valid_freq == 0:
+            while True:
+                try:
+                    sess.run(valid_accuracy_op)
+                except tf.errors.OutOfRangeError:
+                    break
 
-    # validation
-
+            valid_accuracy_value = sess.run(valid_accuracy)
+            tf.logging.info('validation_accuracy: {}'.format(valid_accuracy_value))
+    # test
     while True:
         try:
-            sess.run(valid_accuracy_op)
+            sess.run(test_accuracy_op)
         except tf.errors.OutOfRangeError:
             break
 
-    valid_accuracy_value = sess.run(valid_accuracy)
-
-    tf.logging.info('validation_accuracy: {}'.format(valid_accuracy_value))
+    test_accuracy_value = sess.run(test_accuracy)
+    tf.logging.info('test_accuracy: {}'.format(test_accuracy_value))
