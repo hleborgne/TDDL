@@ -53,69 +53,6 @@ flags.DEFINE_bool('fine_tune', False, '')
 
 def main(argv):
 
-    np.random.seed(42) # to make the results reproductible
-    tf.random.set_seed(42) # to make the results reproductible 
-    logging.set_verbosity(logging.INFO)
-
-    # ========================= Read target problem data ===========================
-
-    # Get the filenames and label of our data
-    image_filenames = []
-    image_labels = []# -*- coding: utf-8 -*
-from __future__ import absolute_import, division, print_function
-
-import os
-import numpy as np
-import tensorflow as tf
-import tensorflow_hub as hub
-import tensorflow.keras as K
-
-from absl import app, flags, logging
-from operator import itemgetter
-
-# default project structure
-
-# project
-#   +--code-tf
-#   |   +--main.py
-#   |   +--README_tf.md
-#   |
-#   +--data
-#       +--coast
-#       |   +--images.jpg
-#       |   +--...
-#       +--forest--
-#       |   +--images.jpg
-#       |   +--.
-#       +--highway
-#           +--image.jpg
-#           +--...
-
-# NB: vous pouvez faire un lien dynamique vers les données:
-#           cd project
-#           ln -s /path/to/data data
-
-# ======================== Define some usefull flags ===========================
-
-FLAGS = flags.FLAGS
-flags.DEFINE_integer('batch_size', 10, '')
-flags.DEFINE_float('learning_rate', 0.001, '')
-flags.DEFINE_integer('initial_step', 0, '')
-flags.DEFINE_integer('final_step', -1, 'set to `-1` to train indefinitely')
-flags.DEFINE_integer('info_freq', 1, '')
-flags.DEFINE_integer('valid_freq', 5, '')
-flags.DEFINE_string('data_dir', '../data', '')
-flags.DEFINE_bool('fine_tune', False, '')
-
-# example:
-# >> python main.py --batch_size=16 --final_step=20 --info_freq=1
-#
-# you can try with larger batch_size or more steps for better performances (but it's slower)
-
-# ======================== Load a pre-trained network ==========================
-
-def main(argv):
-
     np.random.seed(43) # to make the results reproductible
     tf.random.set_seed(42) # to make the results reproductible 
     logging.set_verbosity(logging.INFO)
