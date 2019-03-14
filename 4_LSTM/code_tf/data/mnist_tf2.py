@@ -25,9 +25,6 @@ def load(batch_size):
     x_train = np.delete(x_train, I, 0)
     y_train = np.delete(y_train, I, 0)
 
-    # at this stage, the dataset is stored in numpy arrays. let's create 
-    # `tf.data.Iterators` to iterate through data.
-
     def make_dataset(x, y, shuffle_and_repeat=False):
         """function that creates a `tf.data.Iterator` object"""
 

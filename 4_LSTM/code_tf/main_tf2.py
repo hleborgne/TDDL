@@ -65,7 +65,7 @@ flags.DEFINE_string('model', 'mlp', '')
 # ================================ Read data ===================================
 
 def main(argv):
-    # load datasets
+
     datasets = mnist_tf2.load(FLAGS.batch_size)
     train_dataset = datasets['train']
     valid_dataset = datasets['valid']
@@ -77,12 +77,12 @@ def main(argv):
     model = models[FLAGS.model]()
     model.build(input_shape=(FLAGS.batch_size,28,28,1))
     model.summary()
+
     loss_func = tf.losses.CategoricalCrossentropy()
     optimizer = tf.optimizers.Adam(FLAGS.learning_rate)
     mean_accuracy = tf.metrics.Accuracy()
     mean_loss = tf.metrics.Mean()
-    
-    # create train op
+
     @tf.function
     def train_step(images, labels):
         with tf.GradientTape() as tape:
@@ -106,7 +106,6 @@ def main(argv):
 
     train_iterator = train_dataset.__iter__()
     
-    # training loop
     step = FLAGS.initial_step
     while step != FLAGS.final_step:
         step += 1
@@ -116,9 +115,9 @@ def main(argv):
         train_step(images, labels)
 
         if step % FLAGS.train_info_freq == 0:
-            template = '| step {:6d} | loss: {:7.5f} | accuracy: {:7.5f} | valid accuracy:   ---   |'
+            template = '| step: {:6d} | loss: {:7.5f} | accuracy: {:7.5f} | valid accuracy:   ---   |'
             logging.info(template.format(step, mean_loss.result(), mean_accuracy.result()))
-            
+
             mean_accuracy.reset_states()
             mean_loss.reset_states()
 
@@ -128,10 +127,8 @@ def main(argv):
                 images, labels = itemgetter('image', 'label')(example)
                 evaluation_step(images, labels)
 
-            template = '| step {:6d} | loss:   ---   | accuracy:   ---   | valid accuracy: {:7.5f} |'
+            template = '| step: {:6d} | loss:   ---   | accuracy:   ---   | valid accuracy: {:7.5f} |'
             logging.info(template.format(step, mean_accuracy.result()))
-            
-    # final evaluation
 
     if FLAGS.final_test:
         mean_accuracy.reset_states()
