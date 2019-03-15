@@ -101,8 +101,6 @@ def main(argv):
         mean_accuracy.update_state(predictions, labels)
 
     # ============================== Do the training ===============================
-
-    train_iterator = train_dataset.__iter__()
     
     for step, example in enumerate(train_dataset):
         if step == FLAGS.final_step:
