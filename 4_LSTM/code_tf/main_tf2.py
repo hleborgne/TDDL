@@ -60,9 +60,9 @@ flags.DEFINE_string('model', 'mlp', '')
 #         self.model = model
 # FLAGS = HPARAMS() # change hyper-parameters here
 
-# ================================ Read data ===================================
-
 def main(argv):
+    
+    # ================================ Read data ===================================
 
     datasets = mnist_tf2.load(FLAGS.batch_size)
     train_dataset = datasets['train']
