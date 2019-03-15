@@ -18,8 +18,8 @@ class CNN(K.Model):
         self.pool_2  = K.layers.MaxPool2D()
         self.flatten = K.layers.Flatten()
         self.dropout = K.layers.Dropout(0.5)
-        self.dense   = K.layers.Dense(128, activation=tf.nn.relu)
-        self.outputs = K.layers.Dense(10)
+        self.dense_1   = K.layers.Dense(128, activation=tf.nn.relu)
+        self.dense_2 = K.layers.Dense(10)
     
     def call(self, x, training=True):
         h = self.conv_1(x)
@@ -28,6 +28,6 @@ class CNN(K.Model):
         h = self.pool_2(h)        
         h = self.flatten(h)        
         h = self.dropout(h, training=training)
-        h = self.dense(h)
-        y = self.outputs(h)
+        h = self.dense_1(h)
+        y = self.dense_2(h)
         return y

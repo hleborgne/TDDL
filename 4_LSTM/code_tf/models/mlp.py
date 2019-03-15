@@ -17,7 +17,7 @@ class MLP(K.Model):
         self.dense_2 = K.layers.Dense(units=256, activation=tf.nn.relu)
         self.dense_3 = K.layers.Dense(units=128, activation=tf.nn.relu)
         self.dropout = K.layers.Dropout(0.5)
-        self.outputs = K.layers.Dense(10)
+        self.dense_4 = K.layers.Dense(10)
 
     def call(self, x, training=True):
         h = self.flatten(x) 
@@ -25,5 +25,5 @@ class MLP(K.Model):
         h = self.dense_2(h) 
         h = self.dense_3(h) 
         h = self.dropout(h, training=training) 
-        y = self.outputs(h)
+        y = self.dense_4(h)
         return y

@@ -35,7 +35,6 @@ logging.set_verbosity(logging.INFO)
 FLAGS = flags.FLAGS
 flags.DEFINE_integer('batch_size', 100, '')
 flags.DEFINE_float('learning_rate', 0.001, '')
-flags.DEFINE_integer('initial_step', 0, '')
 flags.DEFINE_integer('final_step', -1, 'set to `-1` to train indefinitely')
 flags.DEFINE_integer('train_info_freq', 100, '')
 flags.DEFINE_integer('valid_info_freq', 1000, '')
@@ -49,12 +48,11 @@ flags.DEFINE_string('model', 'mlp', '')
 # --------------------------
 
 # class HPARAMS:
-#     def __init__(self, batch_size=100, learning_rate=0.001, initial_step=0, 
-#                  final_step=-1, train_info_freq=10, valid_info_freq=1000, 
-#                  final_test=False, model='mlp'):
+#     def __init__(self, batch_size=100, learning_rate=0.001, final_step=-1, 
+#                  train_info_freq=10, valid_info_freq=1000, final_test=False, 
+#                  model='mlp'):
 #         self.batch_size = batch_size
 #         self.learning_rate = learning_rate
-#         self.initial_step = initial_step
 #         self.final_step = final_step
 #         self.train_info_freq = train_info_freq
 #         self.valid_info_freq = valid_info_freq
@@ -106,11 +104,10 @@ def main(argv):
 
     train_iterator = train_dataset.__iter__()
     
-    step = FLAGS.initial_step
-    while step != FLAGS.final_step:
-        step += 1
+    for step, example in enumerate(train_dataset):
+        if step == FLAGS.final_step:
+            break
 
-        example = next(train_iterator)
         images, labels = itemgetter('image', 'label')(example)
         train_step(images, labels)
 
