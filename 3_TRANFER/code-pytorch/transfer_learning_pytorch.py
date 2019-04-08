@@ -82,6 +82,7 @@ resnet.to(device) # on utilise le GPU / CPU en fonction de ce qui est disponible
 resnet.train(True) # pas indispensable ici, mais bonne pratique de façon général : permet notamment d'activer / désactiver le dropout en fonction de si on entraîne ou si on teste le modèle
 
 # on définit une loss et un optimizer
+# on limite l'optimisation aus paramètres de la nouvelle couche
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(resnet.fc.parameters(), lr=0.001, momentum=0.9)
 
