@@ -14,7 +14,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-# we will GPU if available, otherwise CPU
+# we use GPU if available, otherwise CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 
