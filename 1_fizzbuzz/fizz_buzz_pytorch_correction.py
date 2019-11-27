@@ -75,10 +75,10 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
         # prediction et calcul loss
         y_pred = model(batchX)
         loss = loss_fn(y_pred, batchY)
-    
+
         # mettre les gradients à 0 avant la passe retour (backward)
         optimizer.zero_grad()
-    
+
         # rétro-propagation
         loss.backward()
         optimizer.step()
@@ -86,7 +86,7 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
     # calcul coût  (et affichage)
     loss = loss_fn( model(X_train), Y_train)
     if epoch%100 == 0:
-        print(epoch, loss.data[0])
+        print('epoch {} training loss {}'.format(epoch, loss.item()))
 
     # affichage de la performance courante
     #   sur train (1-erreur empirique)
@@ -109,7 +109,7 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
 Y_test_pred = model(X_test)
 predictions = zip(range(1, 101), list(Y_test_pred.max(1)[1].data.tolist()))
 print("============== Final result ============")
-print (fizz_buzz(i, x) for (i, x) in predictions)
+print ([fizz_buzz(i, x) for (i, x) in predictions])
 
 # [exo 1.1] Performances de test
 gtY = np.array([fizz_buzz_encode(i) for i in raw_data_test])
