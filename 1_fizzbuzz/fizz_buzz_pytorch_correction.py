@@ -109,7 +109,7 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
 Y_test_pred = model(X_test)
 predictions = zip(range(1, 101), list(Y_test_pred.max(1)[1].data.tolist()))
 print("============== Final result ============")
-print [fizz_buzz(i, x) for (i, x) in predictions]
+print (fizz_buzz(i, x) for (i, x) in predictions)
 
 # [exo 1.1] Performances de test
 gtY = np.array([fizz_buzz_encode(i) for i in raw_data_test])
