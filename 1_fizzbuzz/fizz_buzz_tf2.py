@@ -23,14 +23,10 @@ def fizz_buzz_encode(i):
 trX = np.array([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])
 trY = np.array([fizz_buzz_encode(i)          for i in range(101, 2 ** NUM_DIGITS)])
 
-# données de validation (tirage aléatoire du train)
+# [exercice 1.2] données de validation (tirage aléatoire du train)
 NUM_VAL=100 # nombre de données de validation
 p = np.random.permutation(range(len(trX)))
 trX, trY = trX[p], trY[p]
-#valX=trX[0:NUM_VAL].copy()
-#valY=trY[0:NUM_VAL].copy()
-#trX=trX[NUM_VAL:]
-#trY=trY[NUM_VAL:]
 valX, valY = trX[0:NUM_VAL].copy(), trY[0:NUM_VAL].copy()
 trX, trY   = trX[NUM_VAL:], trY[NUM_VAL:]
 
@@ -80,7 +76,6 @@ def test_step(samples, labels):
   val_accuracy(labels, predictions)
 
 EPOCHS = 1000
-
 for epoch in range(EPOCHS):
 
   for images, labels in batched_train_ds:
@@ -89,12 +84,12 @@ for epoch in range(EPOCHS):
   for val_images, val_labels in batched_val_ds:
     test_step(val_images, val_labels)
 
-  template = 'Epoch {}, Loss: {}, Accuracy: {}, Val Loss: {}, Val Accuracy: {}'
+  template = 'Epoch {}, Loss: {:1.4}, Accuracy: {:2.2%}, Val Loss: {:1.4}, Val Accuracy: {:2.2%}'
   print(template.format(epoch+1,
                         train_loss.result(),
-                        train_accuracy.result()*100,
+                        train_accuracy.result(),
                         val_loss.result(),
-                        val_accuracy.result()*100))
+                        val_accuracy.result()))
 
   # Reset the metrics for the next epoch
   train_loss.reset_states()
@@ -114,7 +109,7 @@ output = np.vectorize(fizz_buzz)(raw_data_test, tf.math.argmax(teY,1))
 print('======================')
 print(output)
 
-# performances en test
+# [exercice 1.1] performances en test
 gtY = np.array([fizz_buzz_encode(i) for i in raw_data_test])
 print("test perf: ", 100*np.mean(gtY == tf.math.argmax(teY,1)))
 
