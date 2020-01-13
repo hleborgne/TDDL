@@ -54,7 +54,6 @@ def main(argv):
     test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
 
     # define training and evaluation steps
-
     @tf.function
     def forward(features, training=False):
         print('build eval')
@@ -97,7 +96,6 @@ def main(argv):
                 test_accuracy(tf.math.argmax(test_features['label'], axis=-1), predictions)
                 test_loss(loss)
     
-
             template = 'step: {:06d} - train loss/acc: {:3.2f}/{:2.2%} - test loss/acc: {:3.2f}/{:2.2%}'
             logging.info(template.format(step, 
                 train_loss.result(), train_accuracy.result(), 
