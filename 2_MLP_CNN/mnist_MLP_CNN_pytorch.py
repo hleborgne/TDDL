@@ -110,7 +110,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr = 0.05) # try lr=0.01, moment
 loss_fn = nn.CrossEntropyLoss()
 
 # main loop (train+test)
-for epoch in xrange(10):
+for epoch in range(10):
     # training
     model.train() # mode "train" agit sur "dropout" ou "batchnorm"
     for batch_idx, (x, target) in enumerate(train_loader):
