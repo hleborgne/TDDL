@@ -3,12 +3,14 @@ import sys
 import numpy as np
 import tensorflow as tf
 import random
+import matplotlib.pyplot as plt
 
 from absl import app, flags, logging
 
 from datasets import mnist
 from models.mlp import MLP
 from models.cnn import CNN
+
 
 datasets = {
     'mnist': mnist
@@ -47,6 +49,16 @@ def main(argv):
 
     optimizer = tf.optimizers.SGD(FLAGS.learning_rate)
 
+    # display 10 images
+    for il in train_dataset.take(1):
+        images, labels = il["image"], il["label"]
+        for i in range(0,10):
+            img= tf.squeeze(images[i])
+            plt.imshow(img, cmap='gray')
+            plt.title("Label: " + str(labels[i])) # moche!
+            plt.pause(1.5)
+        plt.close()
+
     # define metrics
     train_loss = tf.keras.metrics.Mean(name='train_accuracy')
     test_loss = tf.keras.metrics.Mean(name='test_accuracy')
@@ -83,7 +95,6 @@ def main(argv):
 # ================================ TRAINING ====================================
     
     for step, features in train_dataset.enumerate(FLAGS.initial_step):
-        
         train_step(features)
 
         if step % FLAGS.eval_freq == 0:
