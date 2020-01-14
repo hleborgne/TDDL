@@ -114,9 +114,8 @@ def main(argv):
         if step == FLAGS.final_step + 1: break
     
     # Save model
-    for name, model in framework.models.items():
-        model.save_weights(os.path.join(
-            saved_model_dir, '{}_{:06d}.h5'.format(name, step)))
+    model.save_weights(os.path.join(
+        saved_model_dir, '{}_{:06d}.h5'.format(FLAGS.model, step)))
 
 
 if __name__ == '__main__':
