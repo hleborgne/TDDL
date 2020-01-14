@@ -7,7 +7,7 @@ import random
 from absl import app, flags, logging
 
 from datasets import mnist
-from models.mlp import MLP 
+from models.mlp import MLP
 from models.cnn import CNN
 
 datasets = {
@@ -26,7 +26,7 @@ tf.config.optimizer.set_jit(True)
 
 def main(argv):
     # Create working directories
-    experiment_dir  = os.path.join(FLAGS.output_dir, 
+    experiment_dir  = os.path.join(FLAGS.output_dir,
         FLAGS.experiment_name, FLAGS.model, FLAGS.dataset)
     
     checkpoints_dir = os.path.join(experiment_dir, 'checkpoints')
@@ -45,7 +45,7 @@ def main(argv):
     model = models[FLAGS.model](ch=FLAGS.width_multiplier)
     model.build(input_shape=(FLAGS.batch_size, 28, 28, 1))
 
-    optimizer = tf.optimizers.Adam(FLAGS.learning_rate)
+    optimizer = tf.optimizers.SGD(FLAGS.learning_rate)
 
     # define metrics
     train_loss = tf.keras.metrics.Mean(name='train_accuracy')
@@ -95,7 +95,7 @@ def main(argv):
                 loss, predictions = forward(test_features)
                 test_accuracy(tf.math.argmax(test_features['label'], axis=-1), predictions)
                 test_loss(loss)
-    
+
             template = 'step: {:06d} - train loss/acc: {:3.2f}/{:2.2%} - test loss/acc: {:3.2f}/{:2.2%}'
             logging.info(template.format(step, 
                 train_loss.result(), train_accuracy.result(), 
