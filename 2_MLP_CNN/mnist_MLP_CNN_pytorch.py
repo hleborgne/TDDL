@@ -52,7 +52,7 @@ def imshow(tensor, title=None):
 
 plt.figure()
 for ii in range(10):
-    imshow(train_set.train_data[ii,:,:] , title='Example ({})'.format(train_set.train_labels[ii]) )
+    imshow(train_set.data[ii,:,:] , title='Example ({})'.format(train_set.targets[ii]) )
 plt.close()
 
 # define MLP model
