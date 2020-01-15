@@ -47,8 +47,8 @@ def main(argv):
     model = models[FLAGS.model](ch=FLAGS.width_multiplier)
     model.build(input_shape=(FLAGS.batch_size, 28, 28, 1))
 
-    # optimizer = tf.optimizers.SGD(FLAGS.learning_rate)
-    optimizer = tf.optimizers.Adam(FLAGS.learning_rate)
+    optimizer = tf.optimizers.SGD(FLAGS.learning_rate)
+    # optimizer = tf.optimizers.Adam(FLAGS.learning_rate)
 
     # display 10 images
     for il in train_dataset.take(1):
