@@ -9,7 +9,7 @@ import tensorflow_hub as hub
 from absl import app, flags, logging
 from operator import itemgetter
 
-from datasets import coast_forest_highway as target_dataset
+from datasets import beers as target_dataset
 from models.mobilenet import MobileNet
 
 # default project structure
@@ -17,15 +17,13 @@ from models.mobilenet import MobileNet
 # project
 #   +--code-tf2
 #   |   +--data
-#   |      +--coast
+#   |      +--carlsberg
 #   |      |   +--images.jpg
 #   |      |   +--...
-#   |      +--forest
+#   |      +--chimay
 #   |      |   +--images.jpg
 #   |      |   +--...
-#   |      +--highway
-#   |          +--image.jpg
-#   |          +--...
+#   |      +--...
 #   |   +--datasets
 #   |      +--coast_forest_highway.py
 #   |   +--models
@@ -38,7 +36,7 @@ from models.mobilenet import MobileNet
 #           ln -s /path/to/data data
 
 # Lancer le script
-# >> python main.py --batch_size=16 --final_step=20 --info_freq=1
+# >> python3 train.py --batch_size=16 --final_step=20 --info_freq=1
 #
 # you can try with larger batch_size or more steps for better performances (but it's slower)
 
@@ -51,10 +49,7 @@ def main(argv):
 
     # Create working directories
     experiment_dir  = os.path.join(FLAGS.output_dir,
-        FLAGS.experiment_name, FLAGS.model, FLAGS.dataset)
-    
-    saved_model_dir = os.path.join(experiment_dir, 'saved_models')
-    os.makedirs(saved_model_dir, exist_ok=True)
+        FLAGS.experiment_name)
 
     # Logging training informations
     logging.get_absl_handler().use_absl_log_file('logs', experiment_dir)
@@ -66,7 +61,7 @@ def main(argv):
 
     # ========================= Do transfer learning ===========================
 
-    model = MobileNet()
+    model = MobileNet(fine_tune=FLAGS.fine_tune)
     model.build(input_shape=(FLAGS.batch_size, 224, 224, 3))
     model.summary()
 
@@ -80,7 +75,7 @@ def main(argv):
     def train_step(images, labels):
         with tf.GradientTape() as tape:
             logits = model(images)
-            loss = loss_func(tf.one_hot(labels, 3), logits)
+            loss = loss_func(tf.one_hot(labels, 6), logits)
 
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
@@ -98,7 +93,7 @@ def main(argv):
     @tf.function
     def valid_step(images, labels):
         logits = model(images)
-        loss = loss_func(tf.one_hot(labels, 3), logits)
+        loss = loss_func(tf.one_hot(labels, 6), logits)
 
         valid_loss.update_state(loss)
         
@@ -111,7 +106,7 @@ def main(argv):
     @tf.function
     def test_step(images, labels):
         logits = model(images)
-        loss = loss_func(tf.one_hot(labels, 3), logits)
+        loss = loss_func(tf.one_hot(labels, 6), logits)
 
         test_loss.update_state(loss)
         
@@ -122,9 +117,8 @@ def main(argv):
 
     # training
 
-    while step, example in train_dataset.enumerate(FLAGS.initial_step):
-        if step == FLAGS.final_step: breakif step % FLAGS.save_freq == 0 and step != 0:
-            manager.save() 
+    for step, example in train_dataset.enumerate(FLAGS.initial_step):
+        if step == FLAGS.final_step: break
 
         images, labels = example['image'], example['label']
 
@@ -133,20 +127,20 @@ def main(argv):
         if step % FLAGS.info_freq == 0:
             template = 'step {} - loss: {:4.2f} - accuracy: {:5.2%}'
             logging.info(
-                template.format(step, train_loss.result(), train_accuracy.result()*100))
+                template.format(step, train_loss.result(), train_accuracy.result()))
 
             train_loss.reset_states()
             train_accuracy.reset_states()
 
 
         if step % FLAGS.valid_freq == 0:
-           for example in valid_dataset:
+            for example in valid_dataset:
                 images, labels = example['image'], example['label']
                 valid_step(images, labels)    
 
             template = '------------------------------------------- Validation: loss = {:5.2f},  accuracy {:5.2%}'
             logging.info(
-                template.format(valid_loss.result(), valid_accuracy.result()*100))
+                template.format(valid_loss.result(), valid_accuracy.result()))
 
             valid_loss.reset_states()
             valid_accuracy.reset_states()
@@ -159,16 +153,13 @@ def main(argv):
 
     template = 'Test: loss = {:5.2f},  accuracy {:5.2%}'
     logging.info(
-        template.format(test_loss.result(), test_accuracy.result()*100))
+        template.format(test_loss.result(), test_accuracy.result()))
 
-    # Save model
-    model.save_weights(os.path.join(
-        saved_model_dir, '{}_{:06d}.h5'.format(FLAGS.model, step)))
 
 if __name__ == '__main__':
 
     FLAGS = flags.FLAGS
-    flags.DEFINE_string('output_dir', os.path.join('..', 'outputs'), "")
+    flags.DEFINE_string('output_dir', os.path.join('outputs'), "")
     flags.DEFINE_string('experiment_name', 'test', "")
 
     flags.DEFINE_integer('batch_size', 10, '')

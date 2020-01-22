@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
 
@@ -9,7 +10,7 @@ def load(data_dir, batch_size=1):
     # Get the filenames and label of our data
     image_filenames = []
     image_labels = []
-    for label, category in enumerate(['coast', 'forest', 'highway']):
+    for label, category in enumerate(['carlsberg', 'chimay', 'corona', 'fosters', 'guiness', 'tsingtao']):
         image_names = os.listdir(os.path.join(data_dir, category))
         image_names = sorted(image_names) # to make the results reproductibles
         image_filenames += [os.path.join(
@@ -61,11 +62,11 @@ def load(data_dir, batch_size=1):
 
         return dataset
 
-    train_dataset = make_iterator(train_image_filenames, train_image_labels,
+    train_dataset = create_dataset(train_image_filenames, train_image_labels,
         batch_size=batch_size, shuffle_and_repeat=True)
-    valid_dataset = make_iterator(valid_image_filenames, valid_image_labels,
+    valid_dataset = create_dataset(valid_image_filenames, valid_image_labels,
         batch_size=batch_size)
-    test_dataset = make_iterator(test_image_filenames, test_image_labels,
+    test_dataset = create_dataset(test_image_filenames, test_image_labels,
         batch_size=batch_size)
     
     return train_dataset, valid_dataset, test_dataset
