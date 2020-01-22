@@ -48,6 +48,7 @@ def main(argv):
     model.build(input_shape=(FLAGS.batch_size, 28, 28, 1))
 
     optimizer = tf.optimizers.SGD(FLAGS.learning_rate)
+    # optimizer = tf.optimizers.Adam(FLAGS.learning_rate)
 
     # display 10 images
     for il in train_dataset.take(1):
@@ -108,6 +109,9 @@ def main(argv):
                 test_loss(loss)
 
             template = 'step: {:06d} - train loss/acc: {:3.2f}/{:2.2%} - test loss/acc: {:3.2f}/{:2.2%}'
+            print(template.format(step, 
+                train_loss.result(), train_accuracy.result(), 
+                test_loss.result(), test_accuracy.result()))
             logging.info(template.format(step, 
                 train_loss.result(), train_accuracy.result(), 
                 test_loss.result(), test_accuracy.result()))
