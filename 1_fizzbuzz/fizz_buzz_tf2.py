@@ -38,7 +38,7 @@ val_ds   = tf.data.Dataset.from_tensor_slices(( valX, valY ))
 
 BATCH_SIZE = 32
 batched_train_ds = train_ds.batch(BATCH_SIZE)
-batched_val_ds   =  val_ds.batch(BATCH_SIZE)
+batched_val_ds   = val_ds.batch(BATCH_SIZE)
 
 # définition du MLP à 1 couche cachée (non linearite ReLU)
 NUM_HIDDEN = 100
