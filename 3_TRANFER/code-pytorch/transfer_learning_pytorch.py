@@ -7,10 +7,15 @@
 import torch
 import torchvision
 import numpy as np
-from torchvision import datasets, transforms, models
 from sklearn.model_selection import train_test_split
+import sys
+# utilisation d'alias plus courts
+from torchvision import datasets, transforms, models
+import torch.nn as nn
+import torch.optim as optim
 
-# Récupérer un réseau pré-entraîné
+
+# Récupérer un réseau pré-entraîné (resnet-18)
 
 print("Récupération du réseau pré-entraîné et des données")
 
@@ -30,13 +35,11 @@ data_transforms = transforms.Compose([
 ])
 
 # on lit une première fois les images du dataset
-#image_directory = "python-machine-learning/3scenes/" # à adapter en fonction de l'endroit où sont stockées les données
 image_directory = "../data/" # à adapter en fonction de l'endroit où sont stockées les données
 dataset_full = datasets.ImageFolder(image_directory, data_transforms)
-loader_full = torch.utils.data.DataLoader(dataset_full, batch_size=16, shuffle=True, num_workers=4)
 
-# on split en train, val et test à partir de la liste des images
-np.random.seed(42L)
+# on split en train, val et test à partir de la liste complète
+np.random.seed(42)
 samples_train, samples_test = train_test_split(dataset_full.samples)
 samples_train, samples_val = train_test_split(samples_train)
 
@@ -44,12 +47,11 @@ print("Nombre d'images de train : %i" % len(samples_train))
 print("Nombre d'images de val : %i" % len(samples_val))
 print("Nombre d'images de test : %i" % len(samples_test))
 
-
-# on définit d'autres dataset pytorch à partir des listes d'images de train / val / test
+# on définit les datasets et loaders pytorch à partir des listes d'images de train / val / test
 dataset_train = datasets.ImageFolder(image_directory, data_transforms)
 dataset_train.samples = samples_train
 dataset_train.imgs = samples_train
-loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=16, shuffle=True, num_workers=4)
+loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=32, shuffle=True, num_workers=4)
 
 dataset_val = datasets.ImageFolder(image_directory, data_transforms)
 dataset_val.samples = samples_val
@@ -61,54 +63,20 @@ dataset_test.imgs = samples_test
 
 torch.manual_seed(42)
 
-# Transfert d'apprentissage
-
-import torch.nn as nn
-import torch.optim as optim
+# détermination automatique du nombre de classes (nb_classes=6)
+labels=[x[1] for x in samples_train]
+if np.min(labels) != 0:
+    print("Error: labels should start at 0 (min is %i)" % np.min(labels))
+    sys.exit(-1)
+if np.max(labels) != (len(np.unique(labels))-1):
+    print("Error: labels should go from 0 to Nclasses (max label = {}; Nclasse = {})".format(np.max(labels),len(np.unique(labels)))  )
+    sys.exit(-1)
+nb_classes = np.max(labels)+1
+print("Training on {} classes".format(nb_classes))
 
 # on utilisera le GPU (beaucoup plus rapide) si disponible, sinon on utilisera le CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 #device = torch.device("cpu") # forcer en CPU s'il y a des problèmes de mémoire GPU (+ être patient...)
-
-# on indique qu'il est inutile de calculer les gradients des paramètres de resnet
-for param in resnet.parameters():
-    param.requires_grad = False
-
-# on remplace la dernière couche fully connected à 1000 sorties (classes d'ImageNet) par une fully connected à 3 sorties (nos classes).
-# par défaut, les gradients des paramètres cette couche seront bien calculés
-resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=3, bias=True)
-resnet.to(device) # on utilise le GPU / CPU en fonction de ce qui est disponible
-
-resnet.train(True) # pas indispensable ici, mais bonne pratique de façon général : permet notamment d'activer / désactiver le dropout en fonction de si on entraîne ou si on teste le modèle
-
-# on définit une loss et un optimizer
-# on limite l'optimisation aus paramètres de la nouvelle couche
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(resnet.fc.parameters(), lr=0.001, momentum=0.9)
-
-PRINT_LOSS = False
-
-# fonction classique d'entraînement d'un modèle, voir TDs précédents
-def train_model(model, loader, optimizer, criterion, n_epochs=10):
-    for epoch in range(n_epochs): # à chaque epochs
-        print("EPOCH % i" % epoch)
-        for i, data in enumerate(loader): # on itère sur les minibatchs via le loader
-            inputs, labels = data
-            inputs, labels = inputs.to(device), labels.to(device) # on passe les données sur CPU / GPU
-            optimizer.zero_grad() # on réinitialise les gradients
-            outputs = model(inputs) # on calcule l'output
-            
-            loss = criterion(outputs, labels) # on calcule la loss
-            if PRINT_LOSS:
-                print(loss.item())
-            
-            loss.backward() # on effectue la backprop pour calculer les gradients
-            optimizer.step() # on update les gradients en fonction des paramètres
-
-print("Apprentissage en transfer learning")
-resnet.train(True) # pas indispensable ici, mais bonne pratique de façon général : permet notamment d'activer / désactiver le dropout en fonction de si on entraîne ou si on teste le modèle
-torch.manual_seed(42)
-train_model(resnet, loader_train, optimizer, criterion, n_epochs=10)
 
 # on définit une fonction d'évaluation
 def evaluate(model, dataset):
@@ -129,18 +97,66 @@ def evaluate(model, dataset):
         
     return avg_loss / len(dataset), float(avg_accuracy) / len(dataset)
 
+# fonction classique d'entraînement d'un modèle, voir TDs précédents
+PRINT_LOSS = True
+def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
+    for epoch in range(n_epochs): # à chaque epochs
+        print("EPOCH % i" % epoch)
+        for i, data in enumerate(loader_train): # itère sur les minibatchs via le loader apprentissage
+            inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device) # on passe les données sur CPU / GPU
+            optimizer.zero_grad() # on réinitialise les gradients
+            outputs = model(inputs) # on calcule l'output
+            
+            loss = criterion(outputs, labels) # on calcule la loss
+            if PRINT_LOSS:
+                resnet.train(False)
+                loss_val, accuracy = evaluate(resnet, dataset_val)
+                resnet.train(True)
+                print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc: {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
+            
+            loss.backward() # on effectue la backprop pour calculer les gradients
+            optimizer.step() # on update les gradients en fonction des paramètres
+
+#===== Transfer learning "simple" (sans fine tuning) =====
+
+# on indique qu'il est inutile de calculer les gradients des paramètres de resnet
+for param in resnet.parameters():
+    param.requires_grad = False
+
+# on remplace la dernière couche fully connected à 1000 sorties (classes d'ImageNet) par une fully connected à 6 sorties (nos classes).
+# par défaut, les gradients des paramètres cette couche seront bien calculés
+resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=nb_classes, bias=True)
+resnet.to(device) # on utilise le GPU / CPU en fonction de ce qui est disponible
+
+resnet.train(True) # pas indispensable ici, mais bonne pratique de façon générale
+                   # permet notamment d'activer / désactiver le dropout selon qu'on entraîne ou teste le modèle
+
+# on définit une loss et un optimizer
+# on limite l'optimisation aus paramètres de la nouvelle couche
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(resnet.fc.parameters(), lr=0.001, momentum=0.9)
+
+print("Apprentissage en transfer learning")
+resnet.train(True)
+torch.manual_seed(42)
+train_model(resnet, loader_train, optimizer, criterion, n_epochs=10)
+
+# évaluation
 resnet.train(False)
 loss, accuracy = evaluate(resnet, dataset_test)
 print("Accuracy: %.1f%%" % (100 * accuracy))
 
-# Fine tuning
+#===== Fine tuning =====
 
 # on réinitialise resnet
 resnet = models.resnet18(pretrained=True)
-resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=3, bias=True)
+resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=nb_classes, bias=True)
 resnet.to(device)
 
 # cette fois on veut updater tous les paramètres
+# NB: il serait possible de ne sélectionner que quelques couches
+#     (plutôt parmi les "dernières", proches de la loss)
 params_to_update = resnet.parameters()
 
 criterion = nn.CrossEntropyLoss()
@@ -156,4 +172,3 @@ train_model(resnet, loader_train, optimizer, criterion, n_epochs=10)
 resnet.train(False)
 loss, accuracy = evaluate(resnet, dataset_test)
 print("Accuracy: %.1f%%" % (100 * accuracy))
-
