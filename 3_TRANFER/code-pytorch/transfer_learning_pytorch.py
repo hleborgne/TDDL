@@ -127,6 +127,10 @@ for param in resnet.parameters():
 # on remplace la dernière couche fully connected à 1000 sorties (classes d'ImageNet) par une fully connected à 6 sorties (nos classes).
 # par défaut, les gradients des paramètres cette couche seront bien calculés
 resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=nb_classes, bias=True)
+# on pourrait aussi réinitaliser d'autres couches telle: resnet.layer4[1].conv2
+#  NB: par défaut, la couche réinitialisée a .requires_grad=True
+
+
 resnet.to(device) # on utilise le GPU / CPU en fonction de ce qui est disponible
 
 resnet.train(True) # pas indispensable ici, mais bonne pratique de façon générale
@@ -157,6 +161,16 @@ resnet.to(device)
 # cette fois on veut updater tous les paramètres
 # NB: il serait possible de ne sélectionner que quelques couches
 #     (plutôt parmi les "dernières", proches de la loss)
+#    Exemple (dans ce cas, oter la suite "params_to_update = resnet.parameters()"):
+# list_of_layers_to_finetune=['fc.weight','fc.bias','layer4.1.conv2.weight','layer4.1.bn2.bias','layer4.1.bn2.weight']
+# params_to_update=[]
+# for name,param in resnet.named_parameters():
+#     if name in list_of_layers_to_finetune:
+#         print("fine tune ",name)
+#         params_to_update.append(param)
+#         param.requires_grad = True
+#     else:
+#         param.requires_grad = False
 params_to_update = resnet.parameters()
 
 criterion = nn.CrossEntropyLoss()
