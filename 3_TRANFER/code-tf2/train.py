@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import sys
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -35,8 +36,8 @@ from models.mobilenet import MobileNet
 #           cd project
 #           ln -s /path/to/data data
 
-# Lancer le script
-# >> python3 train.py --batch_size=16 --final_step=20 --info_freq=1
+# Lancer le script (--alsologtostderr pour affichage console en plus du fichier de log)
+# >> python3 train.py --batch_size=16 --final_step=20 --info_freq=1 --data_dir="../data" --alsologtostderr
 #
 # you can try with larger batch_size or more steps for better performances (but it's slower)
 
@@ -50,6 +51,8 @@ def main(argv):
     # Create working directories
     experiment_dir  = os.path.join(FLAGS.output_dir,
         FLAGS.experiment_name)
+    from pathlib import Path
+    Path(experiment_dir).mkdir(parents=True, exist_ok=True)
 
     # Logging training informations
     logging.get_absl_handler().use_absl_log_file('logs', experiment_dir)
