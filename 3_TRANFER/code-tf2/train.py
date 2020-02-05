@@ -37,9 +37,12 @@ from models.mobilenet import MobileNet
 #           ln -s /path/to/data data
 
 # Lancer le script (--alsologtostderr pour affichage console en plus du fichier de log)
-# >> python3 train.py --batch_size=16 --final_step=20 --info_freq=1 --data_dir="../data" --alsologtostderr
+# Transfer learning seul:
+#   python3 train.py --batch_size=16 --final_step=100 --info_freq=1 --data_dir="../data" --alsologtostderr
+# Fine Tuning:
+#   python3 train.py --batch_size=16 --final_step=100 --info_freq=1 --data_dir="../data" --alsologtostderr --fine_tune=True --learning_rate=0.0001
 #
-# you can try with larger batch_size or more steps for better performances (but it's slower)
+# you can try with otherer batch_size or more steps for better performances (but it's slower)
 
 # ======================== Load a pre-trained network ==========================
 
