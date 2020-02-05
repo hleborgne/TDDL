@@ -67,6 +67,9 @@ def main(argv):
     test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
 
     # define training and evaluation steps
+    # the @tf.function decorator allows automatic diffenciation without
+    # explicit call to the graph via a Session
+    # In other word, it is a fundamental component of the eager execution in TF 2.0
     @tf.function
     def forward(features, training=False):
         print('build eval')
