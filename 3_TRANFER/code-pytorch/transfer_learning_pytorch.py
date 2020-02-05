@@ -110,9 +110,9 @@ def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
             
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
-                resnet.train(False)
+                model.train(False)
                 loss_val, accuracy = evaluate(resnet, dataset_val)
-                resnet.train(True)
+                model.train(True)
                 print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc: {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
             
             loss.backward() # on effectue la backprop pour calculer les gradients

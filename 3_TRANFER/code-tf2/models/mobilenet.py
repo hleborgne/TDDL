@@ -12,7 +12,7 @@ class MobileNet(Model):
         self.backbone = hub.KerasLayer(
             'https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/1',
             trainable=fine_tune,
-            output_shape=[1280],
+            #output_shape=[1280],
         )
         self.dense = Dense(units=6)
         self.softmax = Softmax()
