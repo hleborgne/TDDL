@@ -28,7 +28,7 @@ num_layers = 1
 num_classes = 10
 batch_size = 100
 num_epochs = 2
-learning_rate = 0.001
+learning_rate = 0.001 # try 0.0005 for BiLSTM
 
 trans = transforms.Compose( [ transforms.ToTensor(), transforms.Normalize( (0.1307,),(0.3081,))])
 
@@ -83,7 +83,7 @@ class BiLSTMNet(nn.Module):
         return out
 
 model = LSTMNet(input_size, hidden_size, num_layers, num_classes).to(device)
-# model = BiLSTMNet(input_size, hidden_size, num_layers, num_classes).to(device)
+#model = BiLSTMNet(input_size, hidden_size, num_layers, num_classes).to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr = 0.01)
 loss_fn = nn.CrossEntropyLoss()
