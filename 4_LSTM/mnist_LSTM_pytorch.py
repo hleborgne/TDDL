@@ -16,6 +16,10 @@ import time
 # import datasets 
 from torchvision import datasets, transforms
 
+# Device configuration
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('device = {}'.format(device))
+
 # Hyper-parameters
 sequence_length = 28
 input_size = 28
@@ -52,8 +56,8 @@ class LSTMNet(nn.Module):
 
     def forward(self,x):
         # initial states
-        h0 = torch.zeros(self.nb_layer, x.size(0), self.hidden_size)
-        c0 = torch.zeros(self.nb_layer, x.size(0), self.hidden_size)
+        h0 = torch.zeros(self.nb_layer, x.size(0), self.hidden_size).to(device)
+        c0 = torch.zeros(self.nb_layer, x.size(0), self.hidden_size).to(device)
 
         out,_ = self.lstm(x, (h0,c0))
         out = self.fc(out[:,-1,:])
@@ -71,15 +75,15 @@ class BiLSTMNet(nn.Module):
 
     def forward(self,x):
         # initial states
-        h0 = torch.zeros(self.nb_layer*2, x.size(0), self.hidden_size)
-        c0 = torch.zeros(self.nb_layer*2, x.size(0), self.hidden_size)
+        h0 = torch.zeros(self.nb_layer*2, x.size(0), self.hidden_size).to(device)
+        c0 = torch.zeros(self.nb_layer*2, x.size(0), self.hidden_size).to(device)
 
         out,_ = self.lstm(x, (h0,c0))
         out = self.fc(out[:,-1,:])
         return out
 
-model = LSTMNet(input_size, hidden_size, num_layers, num_classes)
-# model = BiLSTMNet(input_size, hidden_size, num_layers, num_classes)
+model = LSTMNet(input_size, hidden_size, num_layers, num_classes).to(device)
+# model = BiLSTMNet(input_size, hidden_size, num_layers, num_classes).to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr = 0.01)
 loss_fn = nn.CrossEntropyLoss()
@@ -89,7 +93,8 @@ total_step = len(train_loader)
 start = time.time()
 for epoch in range(num_epochs):
     for i,(img,lab) in enumerate(train_loader):
-        img = img.reshape(-1,sequence_length,input_size)
+        img = img.reshape(-1,sequence_length,input_size).to(device)
+        lab = lab.to(device)
 
         outputs = model(img)
         loss = loss_fn(outputs,lab)
@@ -107,7 +112,8 @@ with torch.no_grad():
     correct = 0
     total = 0
     for img, lab in test_loader:
-        img = img.reshape(-1,sequence_length,input_size)
+        img = img.reshape(-1,sequence_length,input_size).to(device)
+        lab = lab.to(device)
         outputs = model(img)
         _, pred = torch.max(outputs.data,1)
         total += lab.size(0)
