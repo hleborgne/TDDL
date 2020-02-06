@@ -18,7 +18,7 @@ from torchvision import datasets, transforms
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print 'device = {}'.format(device)
+print('device = {}'.format(device))
 
 # Hyper-parameters
 sequence_length = 28
