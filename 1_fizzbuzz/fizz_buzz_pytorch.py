@@ -69,10 +69,10 @@ for epoch in range(10000):
     # calcul coût  (et affichage)
     loss = loss_fn( model(X), Y)
     if epoch%100 == 0:
-        print(epoch, loss.data[0])
+        print('epoch {} training loss {}'.format(epoch, loss.item()))
 
     # visualisation des résultats en cours d'apprentissage
-    # (doit êtrefait sur l'ensemble de validation normalement)
+    # (doit être fait sur l'ensemble de validation normalement)
     if(epoch%1000==0):
         Y_test_pred = model(X_test)
         val, idx = torch.max(Y_test_pred,1)
@@ -93,5 +93,5 @@ print(output)
 Y_test_pred = model(X_test)
 predictions = zip(range(1, 101), list(Y_test_pred.max(1)[1].data.tolist()))
 print("============== Final result ============")
-print [fizz_buzz(i, x) for (i, x) in predictions]
+print ([fizz_buzz(i, x) for (i, x) in predictions])
 

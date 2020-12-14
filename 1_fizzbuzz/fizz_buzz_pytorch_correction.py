@@ -42,6 +42,7 @@ X_train, Y_train = X_train[NUM_VAL: ,:], Y_train[NUM_VAL:]
 
 # données de test
 X_test=Variable(torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(1,101)]))
+raw_data_test = np.arange(1, 101) # valeurs de test
 
 # nombre de neurones dans la couche cachée
 NUM_HIDDEN = 100 # [exo 2.2] valeur de la couche cachée
@@ -65,7 +66,6 @@ def fizz_buzz(i, prediction):
 
 # on lance les calculs
 BATCH_SIZE = 128
-raw_data_test = np.arange(1, 101) # valeurs de test
 for epoch in range(10000):  # [exo 2.4] nombre d'itérations
     for start in range(0, len(X_train), BATCH_SIZE):
         end = start + BATCH_SIZE
