@@ -61,6 +61,16 @@ NUM_HIDDEN_1 = 256 # try 512
 NUM_HIDDEN_2 = 256
 NUM_CLASSES = 10
 
+
+class RegSoftNet(nn.Module):
+    def __init__(self):
+        super(RegSoftNet, self).__init__()
+        self.fc = nn.Linear(DATA_SIZE,NUM_CLASSES)
+    def forward(self, x):
+        x = x.view(-1, DATA_SIZE) # reshape the tensor
+        x = F.relu(self.fc(x))
+        return x
+
 class MLPNet(nn.Module):
     def __init__(self):
         super(MLPNet, self).__init__()
@@ -100,7 +110,8 @@ class CNNNet(nn.Module):
         # return F.log_softmax(x, dim=1)
 
 # define model (choose MLP or CNN)
-model = MLPNet()
+model = RegSoftNet()
+#model = MLPNet()
 #model = CNNNet()
 
 model.to(device) # puts model on GPU / CPU
