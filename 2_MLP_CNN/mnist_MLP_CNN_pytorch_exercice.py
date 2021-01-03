@@ -31,14 +31,14 @@ batch_size = 100
 train_loader = torch.utils.data.DataLoader(
                  dataset=train_set,
                  batch_size=batch_size,
-                 shuffle=True)
+                 shuffle=TODO)
 test_loader = torch.utils.data.DataLoader(
                 dataset=test_set,
                 batch_size=batch_size,
-                shuffle=False)
+                shuffle=TODO)
 
-print('total training batch number: {}'.format(len(train_loader)))
-print('total testing batch number: {}'.format(len(test_loader)))
+print('total training batch number: {}'.format(TODO))
+print('total testing batch number: {}'.format(TODO))
 
 # display some images
 # for an alternative see https://pytorch.org/tutorials/advanced/neural_style_tutorial.html
@@ -52,58 +52,55 @@ def imshow(tensor, title=None):
 
 plt.figure()
 for ii in range(10):
-    imshow(train_set.data[ii,:,:] , title='MNIST example ({})'.format(train_set.targets[ii]) )
+    imshow(train_set.TODO , title='MNIST example ({})'.format(train_set.TODO) )
 plt.close()
 
 # define MLP model
-DATA_SIZE = 784
+DATA_SIZE = TODO
+NUM_CLASSES = TODO
 NUM_HIDDEN_1 = 256 # try 512
 NUM_HIDDEN_2 = 256
-NUM_CLASSES = 10
 
 
 class RegSoftNet(nn.Module):
     def __init__(self):
         super(RegSoftNet, self).__init__()
-        self.fc = nn.Linear(DATA_SIZE,NUM_CLASSES)
+        self.fc = TODO
     def forward(self, x):
         x = x.view(-1, DATA_SIZE) # reshape the tensor
-        # x = F.relu(self.fc(x))
-        x = self.fc(x)
+        x = TODO
         return x
 
 class MLPNet(nn.Module):
     def __init__(self):
         super(MLPNet, self).__init__()
-        self.fc1 = nn.Linear(DATA_SIZE, NUM_HIDDEN_1)
-        self.fc2 = nn.Linear(NUM_HIDDEN_1, NUM_HIDDEN_2)
-        self.fc3 = nn.Linear(NUM_HIDDEN_2, NUM_CLASSES)
+        self.fc1 = TODO
+        self.fc2 = TODO
+        self.fc3 = TODO
     def forward(self, x):
         x = x.view(-1, DATA_SIZE) # reshape the tensor 
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
+        x = TODO
+        x = TODO
+        x = TODO
         return x
 
 
-NUM_CONV_1=10 # try 32
-NUM_CONV_2=20 # try 64
-NUM_FC=500 # try 1024
+NUM_CONV_1=TODO
+NUM_CONV_2=TODO
+NUM_FC=TODO
 class CNNNet(nn.Module):
     def __init__(self):
         super(CNNNet,self).__init__()
-        self.conv_1 = nn.Conv2d(1,NUM_CONV_1,5,1) # kernel_size = 5
-        self.conv_2 = nn.Conv2d(NUM_CONV_1,NUM_CONV_2,5,1) # kernel_size = 5
-        # self.drop = nn.Dropout2d()
-        self.fc_1 = nn.Linear(4*4*NUM_CONV_2, NUM_FC)
-        self.fc_2 = nn.Linear(NUM_FC,NUM_CLASSES)
+        self.conv_1 = nn.Conv2d(TODO,TODO,5,1) # kernel_size = 5
+        self.conv_2 = nn.Conv2d(TODO,TODO,5,1) # kernel_size = 5
+        self.fc_1 = nn.Linear(TODO_H, TODO)
+        self.fc_2 = nn.Linear(TODO,NUM_CLASSES)
     def forward(self,x):
         x = F.relu(self.conv_1(x))
         x = F.max_pool2d(x,2,2)
         x = F.relu(self.conv_2(x))
-        # x = F.relu(self.drop(self.conv_2(x)))
         x = F.max_pool2d(x,2,2)
-        x = x.view(-1,4*4*NUM_CONV_2)
+        x = x.view(-1,TODO_H)
         x = F.relu(self.fc_1(x))
         x = self.fc_2(x)
         return x
@@ -118,8 +115,8 @@ model = RegSoftNet()
 model.to(device) # puts model on GPU / CPU
 
 # optimization hyperparameters
-optimizer = torch.optim.SGD(model.parameters(), lr = 0.05) # try lr=0.01, momentum=0.9
-loss_fn = nn.CrossEntropyLoss()
+optimizer = TODO
+loss_fn = TODO
 
 # main loop (train+test)
 for epoch in range(10):
