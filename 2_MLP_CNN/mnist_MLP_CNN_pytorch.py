@@ -61,7 +61,6 @@ NUM_HIDDEN_1 = 256 # try 512
 NUM_HIDDEN_2 = 256
 NUM_CLASSES = 10
 
-
 class RegSoftNet(nn.Module):
     def __init__(self):
         super(RegSoftNet, self).__init__()
