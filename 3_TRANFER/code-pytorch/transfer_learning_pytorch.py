@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+#
+# - read a custom image dataset
+# - transfer learning (from resnet-18)
+# - fine-tuning
+#
 # Useful link and source: https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
 # (Or more generally https://pytorch.org/tutorials/)
 # Dataset from https://www.pyimagesearch.com/2019/01/14/machine-learning-in-python/
@@ -9,25 +14,16 @@ import torchvision
 import numpy as np
 from sklearn.model_selection import train_test_split
 import sys
-# utilisation d'alias plus courts
 from torchvision import datasets, transforms, models
 import torch.nn as nn
 import torch.optim as optim
 
-
-# Récupérer un réseau pré-entraîné (resnet-18)
-
-print("Récupération du réseau pré-entraîné et des données")
-
-resnet = models.resnet18(pretrained=True)
-
-# Lire un problème cible
-
-# means et std du dataset ImageNet utilisé pour entraîner ResNet
+# Normalisation des images pour les modèles pré-entraînés PyTorch
+# voir: https://pytorch.org/docs/stable/torchvision/models.html
+# et ici pour les « explications » sur les valeurs exactes: https://github.com/pytorch/vision/issues/1439
 mean = np.array([0.485, 0.456, 0.406])
 std = np.array([0.229, 0.224, 0.225])
 
-# on définit les transformations à appliquer aux images du dataset
 data_transforms = transforms.Compose([
     transforms.Resize([224, 224]),
     transforms.ToTensor(),
@@ -35,13 +31,14 @@ data_transforms = transforms.Compose([
 ])
 
 # on lit une première fois les images du dataset
-image_directory = "../data/" # à adapter en fonction de l'endroit où sont stockées les données
+# TODO adapter le path selon l'endroit où sont stockées les données
+image_directory = "../data/"
 dataset_full = datasets.ImageFolder(image_directory, data_transforms)
 
 # on split en train, val et test à partir de la liste complète
 np.random.seed(42)
 samples_train, samples_test = train_test_split(dataset_full.samples)
-samples_train, samples_val = train_test_split(samples_train)
+samples_train, samples_val = train_test_split(samples_train,test_size=0.2)
 
 print("Nombre d'images de train : %i" % len(samples_train))
 print("Nombre d'images de val : %i" % len(samples_val))
@@ -72,7 +69,7 @@ if np.max(labels) != (len(np.unique(labels))-1):
     print("Error: labels should go from 0 to Nclasses (max label = {}; Nclasse = {})".format(np.max(labels),len(np.unique(labels)))  )
     sys.exit(-1)
 nb_classes = np.max(labels)+1
-print("Training on {} classes".format(nb_classes))
+print("Apprentissage sur {} classes".format(nb_classes))
 
 # on utilisera le GPU (beaucoup plus rapide) si disponible, sinon on utilisera le CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -111,78 +108,80 @@ def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
                 model.train(False)
-                loss_val, accuracy = evaluate(resnet, dataset_val)
+                loss_val, accuracy = evaluate(my_net, dataset_val)
                 model.train(True)
-                print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc: {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
+                print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc (val): {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
             
             loss.backward() # on effectue la backprop pour calculer les gradients
             optimizer.step() # on update les gradients en fonction des paramètres
 
+# Récupérer un réseau pré-entraîné (resnet-18)
+print("Récupération du ResNet-18 pré-entraîné...")
+my_net = models.resnet18(pretrained=True)
+
 #===== Transfer learning "simple" (sans fine tuning) =====
 
-# on indique qu'il est inutile de calculer les gradients des paramètres de resnet
-for param in resnet.parameters():
+# on indique qu'il est inutile de calculer les gradients des paramètres du réseau
+for param in my_net.parameters():
     param.requires_grad = False
 
 # on remplace la dernière couche fully connected à 1000 sorties (classes d'ImageNet) par une fully connected à 6 sorties (nos classes).
 # par défaut, les gradients des paramètres cette couche seront bien calculés
-resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=nb_classes, bias=True)
-# on pourrait aussi réinitaliser d'autres couches telle: resnet.layer4[1].conv2
+my_net.fc = nn.Linear(in_features=my_net.fc.in_features, out_features=nb_classes, bias=True)
+# on pourrait aussi réinitaliser d'autres couches telle: my_net.layer4[1].conv2
 #  NB: par défaut, la couche réinitialisée a .requires_grad=True
 
-
-resnet.to(device) # on utilise le GPU / CPU en fonction de ce qui est disponible
-
-resnet.train(True) # pas indispensable ici, mais bonne pratique de façon générale
+my_net.to(device) # on utilise le GPU / CPU en fonction de ce qui est disponible
+my_net.train(True) # pas indispensable ici, mais bonne pratique de façon générale
                    # permet notamment d'activer / désactiver le dropout selon qu'on entraîne ou teste le modèle
 
 # on définit une loss et un optimizer
 # on limite l'optimisation aus paramètres de la nouvelle couche
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(resnet.fc.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(my_net.fc.parameters(), lr=0.001, momentum=0.9)
 
 print("Apprentissage en transfer learning")
-resnet.train(True)
+my_net.train(True)
 torch.manual_seed(42)
-train_model(resnet, loader_train, optimizer, criterion, n_epochs=10)
+train_model(my_net, loader_train, optimizer, criterion, n_epochs=10)
 
 # évaluation
-resnet.train(False)
-loss, accuracy = evaluate(resnet, dataset_test)
-print("Accuracy: %.1f%%" % (100 * accuracy))
+my_net.train(False)
+loss, accuracy = evaluate(my_net, dataset_test)
+print("Accuracy (test): %.1f%%" % (100 * accuracy))
 
 #===== Fine tuning =====
 
 # on réinitialise resnet
-resnet = models.resnet18(pretrained=True)
-resnet.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=nb_classes, bias=True)
-resnet.to(device)
+my_net = models.resnet18(pretrained=True)
+my_net.fc = nn.Linear(in_features=my_net.fc.in_features, out_features=nb_classes, bias=True)
+my_net.to(device)
 
 # cette fois on veut updater tous les paramètres
 # NB: il serait possible de ne sélectionner que quelques couches
 #     (plutôt parmi les "dernières", proches de la loss)
-#    Exemple (dans ce cas, oter la suite "params_to_update = resnet.parameters()"):
+#    Exemple (dans ce cas, oter la suite "params_to_update = my_net.parameters()"):
 # list_of_layers_to_finetune=['fc.weight','fc.bias','layer4.1.conv2.weight','layer4.1.bn2.bias','layer4.1.bn2.weight']
 # params_to_update=[]
-# for name,param in resnet.named_parameters():
+# for name,param in my_net.named_parameters():
 #     if name in list_of_layers_to_finetune:
 #         print("fine tune ",name)
 #         params_to_update.append(param)
 #         param.requires_grad = True
 #     else:
 #         param.requires_grad = False
-params_to_update = resnet.parameters()
+params_to_update = my_net.parameters()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
 
 # on ré-entraîne
 print("Apprentissage avec fine-tuning")
-resnet.train(True)
+my_net.train(True)
 torch.manual_seed(42)
-train_model(resnet, loader_train, optimizer, criterion, n_epochs=10)
+train_model(my_net, loader_train, optimizer, criterion, n_epochs=10)
 
 # on ré-évalue les performances
-resnet.train(False)
-loss, accuracy = evaluate(resnet, dataset_test)
-print("Accuracy: %.1f%%" % (100 * accuracy))
+my_net.train(False)
+loss, accuracy = evaluate(my_net, dataset_test)
+print("Accuracy (test): %.1f%%" % (100 * accuracy))
