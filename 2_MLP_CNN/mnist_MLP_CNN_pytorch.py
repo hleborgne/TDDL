@@ -110,9 +110,10 @@ class CNNNet(nn.Module):
         # return F.log_softmax(x, dim=1)
 
 # define model (choose MLP or CNN)
+is_cnn=False
 model = RegSoftNet()
 #model = MLPNet()
-#model = CNNNet()
+#model = CNNNet(); is_cnn=True
 
 model.to(device) # puts model on GPU / CPU
 
@@ -140,6 +141,7 @@ for epoch in range(10):
     with torch.no_grad():
         for batch_idx, (x, target) in enumerate(test_loader):
             x, target = x.to(device), target.to(device)
+            print(x.size())
             out = model(x)
             loss = loss_fn(out, target)
             # _, prediction = torch.max(out.data, 1)
@@ -149,3 +151,8 @@ for epoch in range(10):
     print('Accuracy: {}/{} (tx {:.2f}%, err {:.2f}%)\n'.format(correct,
      len(test_loader.dataset), taux_classif, 100.-taux_classif))
 
+# BONUS: save model to disk (for further inference)
+if is_cnn == True:
+    filename = 'model_cnn.pth'
+    torch.save(model.state_dict(), filename)
+    print("saved model to {}".format(filename))
