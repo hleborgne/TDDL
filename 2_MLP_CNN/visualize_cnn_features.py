@@ -12,19 +12,10 @@ import matplotlib.pyplot as plt
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 
+# load data
 from torchvision import datasets, transforms
 trans = transforms.Compose( [ transforms.ToTensor(), transforms.Normalize( (0.1307,),(0.3081,))])
 test_set = datasets.MNIST( './data', train=False, transform=trans, download=True )
-
-# display some images
-# for an alternative see https://pytorch.org/tutorials/advanced/neural_style_tutorial.html
-def imshow(tensor, title=None):
-    img = tensor.cpu().clone()
-    img = img.squeeze()
-    plt.imshow(img, cmap='gray')
-    if title is not None:
-        plt.title(title)
-    plt.pause(0.5)
 
 # define CNN model
 DATA_SIZE = 784
@@ -59,16 +50,6 @@ model.load_state_dict(torch.load('model_cnn.pth', map_location=device))
 model.eval()
 # torch.no_grad()
 
-nos_image=0
-
-plt.figure()
-# while (nos_image>=0):
-#     imshow(test_set.data[nos_image,:,:] , title='MNIST example {} (label {})'.format(nos_image,test_set.targets[nos_image]) )
-#     nos_image = int(input('Image number ?: '))
-imshow(test_set.data[nos_image,:,:] , title='MNIST example {} (label {})'.format(nos_image,test_set.targets[nos_image]) )
-plt.pause(1)
-plt.close()
-
 # define hooks to register feature maps
 activation = {}
 def get_activation(name):
@@ -79,28 +60,42 @@ def get_activation(name):
 model.conv_1.register_forward_hook(get_activation('conv_1'))
 model.conv_2.register_forward_hook(get_activation('conv_2'))
 
-# convert input to appropriate format
-# then compute output (--> forward pass)
-x=test_set[nos_image][0]
-x=x.unsqueeze(0)
-x=x.to(device)
-out = model(x)
-
-# get featuremaps
-activ_1 = activation['conv_1'].squeeze()
-activ_2 = activation['conv_2'].squeeze()
-
-# display feature maps
+# loop to display image + feature maps
+nos_image=0
+fig_0, axarr_0 = plt.subplots()
 fig_1, axarr_1 = plt.subplots(5,2)
-for idx in range(activ_1.size(0)):
-    axarr_1[idx%5,int(idx/5)].imshow( (activ_1[idx]).cpu())
-fig_1.suptitle('Conv_1 feature maps', fontsize=16)
-
 fig_2, axarr_2 = plt.subplots(5,4)
-for idx in range(activ_2.size(0)):
-    axarr_2[idx%5,int(idx/5)].imshow( (activ_2[idx]).cpu())
-fig_2.suptitle('Conv_2 feature maps', fontsize=16)
+while (nos_image>=0):
+    # convert input to appropriate format
+    # then compute output (--> forward pass)
+    x=test_set[nos_image][0]
+    x=x.unsqueeze(0)
+    x=x.to(device)
+    out = model(x)
+    pred = out.argmax(dim=1, keepdim=True).data.cpu().numpy()[0,0]
+    sco = out[0,pred].data.cpu().numpy()
 
-# plt.pause(0.5)
-# plt.show()
-input("Press Enter to continue...")
+    # display image
+    axarr_0.imshow( (test_set.data[nos_image,:,:]).cpu() , cmap='gray')
+    fig_0.suptitle('img {} (lab={} pred={} sco={})'.format(nos_image,test_set.targets[nos_image],pred,sco))
+
+    # get featuremaps
+    activ_1 = activation['conv_1'].squeeze()
+    activ_2 = activation['conv_2'].squeeze()
+
+    # display feature maps
+    for idx in range(activ_1.size(0)):
+        axarr_1[idx%5,int(idx/5)].imshow( (activ_1[idx]).cpu())
+    fig_1.suptitle('Conv_1 feature maps', fontsize=16)
+
+    for idx in range(activ_2.size(0)):
+        axarr_2[idx%5,int(idx/5)].imshow( (activ_2[idx]).cpu())
+    fig_2.suptitle('Conv_2 feature maps', fontsize=16)
+
+    fig_0.canvas.draw()
+    fig_1.canvas.draw()
+    fig_2.canvas.draw()
+    plt.pause(0.5)
+    nos_image = int(input('Image number ?: '))
+plt.close()
+
