@@ -1,14 +1,33 @@
 # TPDL
-TP de deep learning
+Travaux dirigés de deep learning
 
-## TP 1: Fizz Buzz
-Initiation à la syntaxe et aux bases de [Tensorflow](https://www.tensorflow.org/) et [PyTorch](https://pytorch.org/).
+## TD 1: Fizz Buzz
+Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/).
 
-## TP 2: MLP et CNN
+Code pour [Tensorflow](https://www.tensorflow.org/) disponible mais non corrigé en TD.
+
+## TD 2: MLP et CNN
 Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP et un CNN
 
-## TP 3: transfer learning et finetuning
+```bash
+conda create --name cs_td2 python=3.8
+conda activate cs_td2
+conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
+conda install -c conda -forge matplotlib
+```
+## TD 3: transfer learning et finetuning
 Transfert d'apprentissage entre ImageNet et un petit problème cible. Étude du réglage fin du réseau.
+```
+conda activate cs_td2
+conda install -c anaconda scikit-learn
+```
 
-## TP 4: LSTM
+## TD 4: LSTM
 Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un (bi) LSTM
+
+## TD 5: GAN
+Modèle génératif (GAN) sur exemples jouet
+```
+conda activate cs_td2
+conda install -c anaconda absl-py 
+```
