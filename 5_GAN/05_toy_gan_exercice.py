@@ -28,11 +28,11 @@ def f_data(N, model='circle'):
   eps = np.random.randn(N) # Gaussian noise
   if model == 'circle':
     t = np.random.rand(N) # Uniform
-    return np.column_stack((3*np.cos(t*2*np.pi)+0.1*eps,3*np.sin(t*2*np.pi)+0.1*eps))
+    return np.column_stack((TODO,TODO))
 
   z1 = np.random.randn(N) # Gaussian
   if model == 'simple_sin':
-    return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+0.1*eps))
+    return np.column_stack((TODO,TODO))
   elif model == 'double_sin':
     z2 = np.random.randn(N) # Gaussian (2)
     return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+np.tanh(3*z2)+0.1*eps))
@@ -40,9 +40,9 @@ def f_data(N, model='circle'):
 class Generator(nn.Module):
   def __init__(self, sz_latent,sz_hidden):
     super(Generator, self).__init__()
-    self.fc1 = nn.Linear(sz_latent,sz_hidden)
-    self.fc2 = nn.Linear(sz_hidden,sz_hidden)
-    self.fout = nn.Linear(sz_hidden,2)
+    self.fc1 = nn.Linear(TODO,TODO)
+    self.fc2 = nn.Linear(TODO,TODO)
+    self.fout = nn.Linear(TODO,TODO)
 
   def forward(self, x):
     x = F.relu(self.fc1(x))
@@ -53,46 +53,46 @@ class Generator(nn.Module):
 class Discriminator(nn.Module):
   def __init__(self, sz):
     super(Discriminator, self).__init__()
-    self.fc1 = nn.Linear(2,sz)
-    self.fc2 = nn.Linear(sz,int(sz/2))
-    self.fc3 = nn.Linear(int(sz/2),int(sz/4))
-    self.fout = nn.Linear(int(sz/4),1) # output size==1 : raw score
+    self.fc1 = nn.Linear(TODO,sz)
+    self.fc2 = nn.Linear(sz,TODO)
+    self.fc3 = nn.Linear(int(sz/2),TODO)
+    self.fout = nn.Linear(int(sz/4),TODO)
   def forward(self, x):
     x = F.relu(self.fc1(x))
     x = F.relu(self.fc2(x))
     x = F.relu(self.fc3(x))
-    x = torch.sigmoid(self.fout(x)) # sigmoid(raw score) -> decision (proba)
+    x = TODO # decision (proba)
     return x
 
 def extract(v):
     return v.data.storage().tolist()
 
 def main(argv):
-  latent_dim = FLAGS.latent_dim # default 2; 1 for 1D manifold
+  latent_dim = 2 # 1 for 1D manifold
   G = Generator(latent_dim,32).to(device)
   D = Discriminator(32).to(device)
 
   criterion = nn.BCELoss()
-  d_optimizer = optim.SGD(D.parameters(), lr=1e-3, momentum=0.8)
-  g_optimizer = optim.SGD(G.parameters(), lr=1e-3, momentum=0.8)
+  d_optimizer = optim.SGD(TODO, lr=1e-3, momentum=0.8)
+  g_optimizer = optim.SGD(TODO, lr=1e-3, momentum=0.8)
   
   batch_size = 32
 
-  for epoch in range(FLAGS.epochs):
+  for epoch in range(2000):
     for ii in range(20):  # train D for 20 steps
       D.zero_grad() # could be d_optimizer.zero_grad() since the optimizer is specific to the model
 
       # train D on real data
       d_real_data = Variable(torch.FloatTensor(f_data(batch_size,FLAGS.model))).to(device)
       d_real_decision = D(d_real_data)
-      d_real_error = criterion(d_real_decision, Variable(torch.ones([batch_size,1])).to(device))  # ones = true
+      d_real_error = criterion(d_real_decision, Variable(torch.TODO([batch_size,1])).to(device))
       d_real_error.backward() # compute/store gradients, but don't change params
 
       # train D on fake data
       d_gen_seed = Variable(torch.FloatTensor( torch.randn(batch_size,latent_dim ) )).to(device)  # TODO rand ou randn ?
       d_fake_data = G( d_gen_seed ).detach()  # detach to avoid training G on these labels
       d_fake_decision = D(d_fake_data)
-      d_fake_error = criterion(d_fake_decision, Variable(torch.zeros([batch_size,1]).to(device)))  # zeros = fake
+      d_fake_error = criterion(d_fake_decision, Variable(torch.TODO([batch_size,1]).to(device)))
       d_fake_error.backward()
       d_optimizer.step()     # Only optimizes D's parameters; changes based on stored gradients from backward()
 
@@ -104,7 +104,7 @@ def main(argv):
       g_gen_seed = Variable(torch.FloatTensor( torch.randn(batch_size,latent_dim ))).to(device)
       g_fake_data = G( g_gen_seed )
       dg_fake_decision = D(g_fake_data)
-      g_error = criterion(dg_fake_decision, Variable(torch.ones([batch_size,1]).to(device)))  # Train G to pretend it's genuine
+      g_error = criterion(dg_fake_decision, Variable(torch.TODO([batch_size,1]).to(device)))  # Train G to pretend it's genuine
 
       g_error.backward()
       g_optimizer.step()  # Only optimizes G's parameters
@@ -137,6 +137,4 @@ def main(argv):
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
     flags.DEFINE_enum('model', 'circle', ['circle', 'simple_sin', 'double_sin'], "")
-    flags.DEFINE_integer('epochs', 2000, "")
-    flags.DEFINE_integer('latent_dim', 2, "")
     app.run(main)
