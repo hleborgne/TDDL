@@ -96,7 +96,7 @@ def evaluate(model, dataset):
 
 # fonction classique d'entraînement d'un modèle, voir TDs précédents
 PRINT_LOSS = True
-def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
+def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10):
     for epoch in range(n_epochs): # à chaque epochs
         print("EPOCH % i" % epoch)
         for i, data in enumerate(loader_train): # itère sur les minibatchs via le loader apprentissage
@@ -108,7 +108,7 @@ def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
                 model.train(False)
-                loss_val, accuracy = evaluate(my_net, dataset_val)
+                loss_val, accuracy = evaluate(my_net, data_val)
                 model.train(True)
                 print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc (val): {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
             
@@ -136,14 +136,14 @@ my_net.train(True) # pas indispensable ici, mais bonne pratique de façon géné
                    # permet notamment d'activer / désactiver le dropout selon qu'on entraîne ou teste le modèle
 
 # on définit une loss et un optimizer
-# on limite l'optimisation aus paramètres de la nouvelle couche
+# on limite l'optimisation aux paramètres de la nouvelle couche
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(my_net.fc.parameters(), lr=0.001, momentum=0.9)
 
 print("Apprentissage en transfer learning")
 my_net.train(True)
 torch.manual_seed(42)
-train_model(my_net, loader_train, optimizer, criterion, n_epochs=10)
+train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10)
 
 # évaluation
 my_net.train(False)
@@ -179,7 +179,7 @@ optimizer = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
 print("Apprentissage avec fine-tuning")
 my_net.train(True)
 torch.manual_seed(42)
-train_model(my_net, loader_train, optimizer, criterion, n_epochs=10)
+train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10)
 
 # on ré-évalue les performances
 my_net.train(False)
