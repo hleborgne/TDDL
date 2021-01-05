@@ -133,6 +133,7 @@ def main(argv):
       plt.plot(g_fake_data[:,0],g_fake_data[:,1],'b.')
       plt.draw()
       plt.pause(0.001)
+  plt.show()
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
