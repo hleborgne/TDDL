@@ -158,9 +158,11 @@ my_net.fc = nn.Linear(in_features=my_net.fc.in_features, out_features=nb_classes
 my_net.to(device)
 
 # cette fois on veut updater tous les paramètres
-# NB: il serait possible de ne sélectionner que quelques couches
+params_to_update = my_net.parameters()
+
+# il est possible de ne sélectionner que quelques couches
 #     (plutôt parmi les "dernières", proches de la loss)
-#    Exemple (dans ce cas, oter la suite "params_to_update = my_net.parameters()"):
+#    Exemple (dans ce cas, oter "params_to_update = my_net.parameters()") ci-dessus
 # list_of_layers_to_finetune=['fc.weight','fc.bias','layer4.1.conv2.weight','layer4.1.bn2.bias','layer4.1.bn2.weight']
 # params_to_update=[]
 # for name,param in my_net.named_parameters():
@@ -170,7 +172,6 @@ my_net.to(device)
 #         param.requires_grad = True
 #     else:
 #         param.requires_grad = False
-params_to_update = my_net.parameters()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
