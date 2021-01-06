@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Generative Adversarial Network on toy examples
+# Generative Adversarial Network on toy examples in 3D
 #
 # partially inspired from:
 #   - https://github.com/devnag/pytorch-generative-adversarial-networks
@@ -9,6 +9,10 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# avoid a numpy warning (FIXME proprement...)
+np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)                 
 
 # torch stuff
 import torch
@@ -24,25 +28,33 @@ from absl import app, flags
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # return N data drawn according to the wanted density
-def f_data(N, model='circle'):
+def f_data(N, model='helix'):
   eps = np.random.randn(N) # Gaussian noise
-  if model == 'circle':
-    t = np.random.rand(N) # Uniform
-    return np.column_stack((3*np.cos(t*2*np.pi)+0.1*eps,3*np.sin(t*2*np.pi)+0.1*eps))
+  if model == 'helix':
+    t = np.random.rand(N)*2-1 # Uniform
+    return np.column_stack((4*np.cos(t*2*np.pi)+0.1*eps,4*np.sin(t*2*np.pi)+0.1*eps,4*t+0.1*eps))
+  if model == 'bike_accident':
+    N=int(N/2)
+    eps = np.random.randn(N)
+    t = np.random.rand(N)*4-2
+    r = 4
+    x1 = r * np.sin(t*2*np.pi)+0.1*eps
+    y1 = r * np.cos(t*2*np.pi)+0.1*eps
+    z1 = t*0
+    d1=np.column_stack((x1,y1,z1))
 
-  z1 = np.random.randn(N) # Gaussian
-  if model == 'simple_sin':
-    return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+0.1*eps))
-  elif model == 'double_sin':
-    z2 = np.random.randn(N) # Gaussian (2)
-    return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+np.tanh(3*z2)+0.1*eps))
+    x2 = r + r * np.sin(t*2*np.pi)+0.1*eps
+    y2 = t*0
+    z2 = r * np.cos(t*2*np.pi)+0.1*eps
+    d2=np.column_stack((x2,y2,z2))
+    return np.concatenate((d1,d2), axis=0)
 
 class Generator(nn.Module):
   def __init__(self, sz_latent,sz_hidden):
     super(Generator, self).__init__()
     self.fc1 = nn.Linear(sz_latent,sz_hidden)
     self.fc2 = nn.Linear(sz_hidden,sz_hidden)
-    self.fout = nn.Linear(sz_hidden,2)
+    self.fout = nn.Linear(sz_hidden,3)
 
   def forward(self, x):
     x = F.relu(self.fc1(x))
@@ -53,7 +65,7 @@ class Generator(nn.Module):
 class Discriminator(nn.Module):
   def __init__(self, sz):
     super(Discriminator, self).__init__()
-    self.fc1 = nn.Linear(2,sz)
+    self.fc1 = nn.Linear(3,sz)
     self.fc2 = nn.Linear(sz,int(sz/2))
     self.fc3 = nn.Linear(int(sz/2),int(sz/4))
     self.fout = nn.Linear(int(sz/4),1) # output size==1 : raw score
@@ -78,6 +90,8 @@ def main(argv):
   
   batch_size = 32
 
+  fig = plt.figure()
+  ax = fig.gca(projection='3d')
   for epoch in range(FLAGS.epochs):
     for ii in range(20):  # train D for 20 steps
       D.zero_grad() # could be d_optimizer.zero_grad() since the optimizer is specific to the model
@@ -119,26 +133,24 @@ def main(argv):
       plt.cla()
 
       # plot ground truth
-      if FLAGS.model == "circle":
-        t=np.arange(0,1.1,0.025)
-        plt.plot(3*np.cos(t*2*np.pi),3*np.sin(t*2*np.pi), 'r-')
-      if FLAGS.model == "simple_sin":
-        xx = np.arange(-3,3,0.25)
-        plt.plot(3*xx,np.cos(3*xx), 'r-')
-      if FLAGS.model == "double_sin":
-        xx = np.arange(-3,3,0.25)
-        plt.plot(3*xx,np.cos(3*xx)+1, 'r-')
-        plt.plot(3*xx,np.cos(3*xx)-1, 'r-')
+      if FLAGS.model == "helix":
+        t=np.arange(-1.,1,0.1)
+        ax.plot(4*np.cos(t*2*np.pi),4*np.sin(t*2*np.pi),4*t, 'r-')
+      if FLAGS.model == "bike_accident":
+        t=np.arange(-1.,1,0.1)
+        r=4
+        ax.plot(r * np.sin(t*2*np.pi),r * np.cos(t*2*np.pi),0*t,'r-')
+        ax.plot(r+r * np.sin(t*2*np.pi),0*t,r * np.cos(t*2*np.pi),'r-')
       
       # plot generated data
-      plt.plot(g_fake_data[:,0],g_fake_data[:,1],'b.')
+      ax.plot(g_fake_data[:,0],g_fake_data[:,1],g_fake_data[:,2],'b.')
       plt.draw()
       plt.pause(0.001)
   plt.show()
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
-    flags.DEFINE_enum('model', 'circle', ['circle', 'simple_sin', 'double_sin'], "")
-    flags.DEFINE_integer('epochs', 2000, "")
+    flags.DEFINE_enum('model', 'helix', ['helix','bike_accident'], "")
+    flags.DEFINE_integer('epochs', 3000, "")
     flags.DEFINE_integer('latent_dim', 2, "")
     app.run(main)
