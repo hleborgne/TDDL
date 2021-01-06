@@ -48,6 +48,11 @@ def f_data(N, model='helix'):
     z2 = r * np.cos(t*2*np.pi)+0.1*eps
     d2=np.column_stack((x2,y2,z2))
     return np.concatenate((d1,d2), axis=0)
+  if model == 'saddle_point':
+    x = np.random.rand(N)*4-2
+    y = np.random.rand(N)*4-2
+    z = x**2-y**2+0.1*eps
+    return np.column_stack((x,y,z))
 
 class Generator(nn.Module):
   def __init__(self, sz_latent,sz_hidden):
@@ -133,14 +138,20 @@ def main(argv):
       plt.cla()
 
       # plot ground truth
-      if FLAGS.model == "helix":
+      if FLAGS.model == 'helix':
         t=np.arange(-1.,1,0.1)
         ax.plot(4*np.cos(t*2*np.pi),4*np.sin(t*2*np.pi),4*t, 'r-')
-      if FLAGS.model == "bike_accident":
+      if FLAGS.model == 'bike_accident':
         t=np.arange(-1.,1,0.1)
         r=4
         ax.plot(r * np.sin(t*2*np.pi),r * np.cos(t*2*np.pi),0*t,'r-')
         ax.plot(r+r * np.sin(t*2*np.pi),0*t,r * np.cos(t*2*np.pi),'r-')
+      if FLAGS.model == 'saddle_point':
+        x = np.arange(-2,2,0.1)
+        y = np.arange(-2,2,0.1)
+        x, y = np.meshgrid(x,y)
+        z = x**2 - y**2
+        ax.plot_wireframe(x,y,z, rstride=5, cstride=5, color="red")
       
       # plot generated data
       ax.plot(g_fake_data[:,0],g_fake_data[:,1],g_fake_data[:,2],'b.')
@@ -150,7 +161,7 @@ def main(argv):
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
-    flags.DEFINE_enum('model', 'helix', ['helix','bike_accident'], "")
+    flags.DEFINE_enum('model', 'helix', ['helix','bike_accident','saddle_point'], "")
     flags.DEFINE_integer('epochs', 3000, "")
     flags.DEFINE_integer('latent_dim', 2, "")
     app.run(main)
