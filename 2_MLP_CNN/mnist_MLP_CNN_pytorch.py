@@ -52,7 +52,12 @@ def imshow(tensor, title=None):
 
 plt.figure()
 for ii in range(10):
-    imshow(train_set.data[ii,:,:] , title='MNIST example ({})'.format(train_set.targets[ii]) )
+    imshow(train_set.data[ii,:,:] , title='MNIST example ({})'.format(train_set.targets[ii]))
+# to display 10 random images from training set
+#import random # put it at the beggining of the program
+#for ii in random.sample(range(len(train_set)), 10):
+#    imshow(train_set.data[ii,:,:] , title='MNIST example ({})'.format(train_set.targets[ii]))
+
 plt.close()
 
 # define MLP model
