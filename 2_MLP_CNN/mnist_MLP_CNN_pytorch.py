@@ -116,9 +116,9 @@ class CNNNet(nn.Module):
 
 # define model (choose MLP or CNN)
 is_cnn=False
-model = RegSoftNet()
+#model = RegSoftNet()
 #model = MLPNet()
-#model = CNNNet(); is_cnn=True
+model = CNNNet(); is_cnn=True
 
 model.to(device) # puts model on GPU / CPU
 
@@ -146,7 +146,6 @@ for epoch in range(10):
     with torch.no_grad():
         for batch_idx, (x, target) in enumerate(test_loader):
             x, target = x.to(device), target.to(device)
-            print(x.size())
             out = model(x)
             loss = loss_fn(out, target)
             # _, prediction = torch.max(out.data, 1)

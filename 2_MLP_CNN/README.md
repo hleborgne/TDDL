@@ -10,6 +10,12 @@ You should install using [conda](https://docs.conda.io/en/latest/miniconda.html)
 
 **Warning** with old PyTorch (january 2020, about version 1.3.1), `torchvision` is not compatible with PILLOW 7 (__'PILLOW_VERSION' removed from 'PIL'__). You need to downgrade it to e.g version 6.2.1. With PyTorch 1.7.0, it works directly.
 
+To only remove warnings, you can add this in the Python program:
+```
+import warnings
+import matplotlib.cbook
+warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
+```
 ## Exercice
 To work on the exercice use program `mnist_MLP_CNN_pytorch_exercice.py` that contains TODOs.
 
