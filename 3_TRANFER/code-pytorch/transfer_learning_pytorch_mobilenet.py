@@ -61,6 +61,7 @@ dataset_test.imgs = samples_test
 torch.manual_seed(42)
 
 # détermination automatique du nombre de classes (nb_classes=6)
+# vérification que les labels sont bien dans [0, nb_classes]
 labels=[x[1] for x in samples_train]
 if np.min(labels) != 0:
     print("Error: labels should start at 0 (min is %i)" % np.min(labels))
@@ -69,6 +70,7 @@ if np.max(labels) != (len(np.unique(labels))-1):
     print("Error: labels should go from 0 to Nclasses (max label = {}; Nclasse = {})".format(np.max(labels),len(np.unique(labels)))  )
     sys.exit(-1)
 nb_classes = np.max(labels)+1
+# nb_classes = len(dataset_train.classes)
 print("Apprentissage sur {} classes".format(nb_classes))
 
 # on utilisera le GPU (beaucoup plus rapide) si disponible, sinon on utilisera le CPU
@@ -96,7 +98,7 @@ def evaluate(model, dataset):
 
 # fonction classique d'entraînement d'un modèle, voir TDs précédents
 PRINT_LOSS = True
-def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
+def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10):
     for epoch in range(n_epochs): # à chaque epochs
         print("EPOCH % i" % epoch)
         for i, data in enumerate(loader_train): # itère sur les minibatchs via le loader apprentissage
@@ -108,7 +110,7 @@ def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
                 model.train(False)
-                loss_val, accuracy = evaluate(my_net, dataset_val)
+                loss_val, accuracy = evaluate(model, data_val)
                 model.train(True)
                 print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc (val): {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
             
@@ -116,7 +118,7 @@ def train_model(model, loader_train, optimizer, criterion, n_epochs=10):
             optimizer.step() # on update les gradients en fonction des paramètres
 
 # Récupérer un réseau pré-entraîné (resnet-18)
-print("Récupération du ResNet-18 pré-entraîné...")
+print("Récupération du MobileNet pré-entraîné...")
 my_net = models.mobilenet_v2(pretrained=True)
 
 #===== Transfer learning "simple" (sans fine tuning) =====
@@ -143,7 +145,7 @@ optimizer = optim.SGD(my_net.classifier[1].parameters(), lr=0.001, momentum=0.9)
 print("Apprentissage en transfer learning")
 my_net.train(True)
 torch.manual_seed(42)
-train_model(my_net, loader_train, optimizer, criterion, n_epochs=10)
+train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10)
 
 # évaluation
 my_net.train(False)
@@ -158,7 +160,7 @@ torch.cuda.empty_cache()
 
 #===== Fine tuning =====
 
-# on réinitialise resnet
+# on réinitialise MobileNet
 my_net_ft = models.mobilenet_v2(pretrained=True)
 my_net_ft.classifier[1] = nn.Linear(in_features=my_net_ft.classifier[1].in_features, out_features=nb_classes, bias=True)
 my_net_ft.to(device)
@@ -167,7 +169,7 @@ my_net_ft.to(device)
 # NB: il serait possible de ne sélectionner que quelques couches
 #     (plutôt parmi les "dernières", proches de la loss)
 #    Exemple (dans ce cas, oter la suite "params_to_update = my_net_ft.parameters()"):
-# list_of_layers_to_finetune=['fc.weight','fc.bias','layer4.1.conv2.weight','layer4.1.bn2.bias','layer4.1.bn2.weight']
+# list_of_layers_to_finetune=['classifier.1.weight','features.18.0.weight', 'features.18.1.weight', 'features.18.1.bias']
 # params_to_update=[]
 # for name,param in my_net_ft.named_parameters():
 #     if name in list_of_layers_to_finetune:
@@ -185,7 +187,7 @@ optimizer = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
 print("Apprentissage avec fine-tuning")
 my_net_ft.train(True)
 torch.manual_seed(42)
-train_model(my_net_ft, loader_train, optimizer, criterion, n_epochs=10)
+train_model(my_net_ft, loader_train, dataset_val, optimizer, criterion, n_epochs=10)
 
 # on ré-évalue les performances
 my_net_ft.train(False)
