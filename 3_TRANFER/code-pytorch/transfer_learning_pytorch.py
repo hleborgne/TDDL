@@ -60,7 +60,8 @@ dataset_test.imgs = samples_test
 
 torch.manual_seed(42)
 
-# détermination automatique du nombre de classes (nb_classes=6)
+# détermination du nombre de classes (nb_classes=6)
+# vérification que les labels sont bien dans [0, nb_classes]
 labels=[x[1] for x in samples_train]
 if np.min(labels) != 0:
     print("Error: labels should start at 0 (min is %i)" % np.min(labels))
@@ -69,6 +70,7 @@ if np.max(labels) != (len(np.unique(labels))-1):
     print("Error: labels should go from 0 to Nclasses (max label = {}; Nclasse = {})".format(np.max(labels),len(np.unique(labels)))  )
     sys.exit(-1)
 nb_classes = np.max(labels)+1
+# nb_classes = len(dataset_train.classes)
 print("Apprentissage sur {} classes".format(nb_classes))
 
 # on utilisera le GPU (beaucoup plus rapide) si disponible, sinon on utilisera le CPU
@@ -108,7 +110,7 @@ def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
                 model.train(False)
-                loss_val, accuracy = evaluate(my_net, data_val)
+                loss_val, accuracy = evaluate(model, data_val)
                 model.train(True)
                 print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc (val): {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
             
