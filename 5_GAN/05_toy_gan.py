@@ -135,10 +135,17 @@ def main(argv):
       plt.draw()
       plt.pause(0.001)
   plt.show()
+  if FLAGS.save == True :
+    filename = "model_gan_"+FLAGS.model+".pth"
+    torch.save({
+        'G_state_dict': G.state_dict(),
+        'D_state_dict': D.state_dict()
+        },filename)
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
     flags.DEFINE_enum('model', 'circle', ['circle', 'simple_sin', 'double_sin'], "")
     flags.DEFINE_integer('epochs', 2000, "")
     flags.DEFINE_integer('latent_dim', 2, "")
+    flags.DEFINE_bool('save', True, "")
     app.run(main)
