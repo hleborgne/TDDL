@@ -60,7 +60,8 @@ dataset_test.imgs = samples_test
 
 torch.manual_seed(42)
 
-# détermination automatique du nombre de classes (nb_classes=6)
+# détermination du nombre de classes (nb_classes=6)
+# vérification que les labels sont bien dans [0, nb_classes]
 labels=[x[1] for x in samples_train]
 if np.min(labels) != 0:
     print("Error: labels should start at 0 (min is %i)" % np.min(labels))
@@ -117,7 +118,7 @@ def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
                 model.train(False)
-                loss_val, accuracy = evaluate(model, dataset_val)
+                loss_val, accuracy = evaluate(model, data_val)
                 model.train(True)
                 print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc (val): {:.1%}".format(i, loss.item(), loss_val, accuracy   ))
             
@@ -145,7 +146,7 @@ my_net.train(True) # pas indispensable ici, mais bonne pratique de façon géné
                    # permet notamment d'activer / désactiver le dropout selon qu'on entraîne ou teste le modèle
 
 # on définit une loss et un optimizer
-# on limite l'optimisation aus paramètres de la nouvelle couche
+# on limite l'optimisation aux paramètres de la nouvelle couche
 # criterion = nn.CrossEntropyLoss()
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.SGD(my_net.fc.parameters(), lr=0.01, momentum=0.9)
@@ -168,9 +169,11 @@ my_net.fc = nn.Linear(in_features=my_net.fc.in_features, out_features=nb_classes
 my_net.to(device)
 
 # cette fois on veut updater tous les paramètres
-# NB: il serait possible de ne sélectionner que quelques couches
+params_to_update = my_net.parameters()
+
+# il est possible de ne sélectionner que quelques couches
 #     (plutôt parmi les "dernières", proches de la loss)
-#    Exemple (dans ce cas, oter la suite "params_to_update = my_net.parameters()"):
+#    Exemple (dans ce cas, oter "params_to_update = my_net.parameters()") ci-dessus
 # list_of_layers_to_finetune=['fc.weight','fc.bias','layer4.1.conv2.weight','layer4.1.bn2.bias','layer4.1.bn2.weight']
 # params_to_update=[]
 # for name,param in my_net.named_parameters():
@@ -180,7 +183,7 @@ my_net.to(device)
 #         param.requires_grad = True
 #     else:
 #         param.requires_grad = False
-params_to_update = my_net.parameters()
+
 
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.SGD(params_to_update, lr=0.01, momentum=0.9)
