@@ -117,7 +117,7 @@ def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10
             loss.backward() # on effectue la backprop pour calculer les gradients
             optimizer.step() # on update les gradients en fonction des paramètres
 
-# Récupérer un réseau pré-entraîné (resnet-18)
+# Récupérer un réseau pré-entraîné (MobileNet v2)
 print("Récupération du MobileNet pré-entraîné...")
 my_net = models.mobilenet_v2(pretrained=True)
 
