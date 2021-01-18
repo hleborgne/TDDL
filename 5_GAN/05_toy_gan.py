@@ -89,7 +89,7 @@ def main(argv):
       d_real_error.backward() # compute/store gradients, but don't change params
 
       # train D on fake data
-      d_gen_seed = Variable(torch.FloatTensor( torch.randn(batch_size,latent_dim ) )).to(device)  # TODO rand ou randn ?
+      d_gen_seed = Variable(torch.FloatTensor( torch.randn(batch_size,latent_dim ) )).to(device)
       d_fake_data = G( d_gen_seed ).detach()  # detach to avoid training G on these labels
       d_fake_decision = D(d_fake_data)
       d_fake_error = criterion(d_fake_decision, Variable(torch.zeros([batch_size,1]).to(device)))  # zeros = fake
