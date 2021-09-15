@@ -6,8 +6,8 @@ Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/).
 
 Code pour [Tensorflow](https://www.tensorflow.org/) disponible mais non corrigé en TD.
 
-## TD 2: MLP et CNN
-Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP et un CNN
+## TD 2: DNN classiques (MLP, CNN, (bi)LSTM
+Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP, un CNN et un (bi)LSTM
 
 ```bash
 conda create --name cs_td2 python=3.8
@@ -22,8 +22,7 @@ conda activate cs_td2
 conda install -c anaconda scikit-learn
 ```
 
-## TD 4: LSTM
-Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un (bi) LSTM
+## TD 4: 
 
 ## TD 5: GAN
 Modèle génératif (GAN) sur exemples jouet
