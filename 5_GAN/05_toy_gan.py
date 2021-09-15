@@ -35,6 +35,17 @@ def f_data(N, model='circle'):
   elif model == 'double_sin':
     z2 = np.random.randn(N) # Gaussian (2)
     return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+np.tanh(3*z2)+0.1*eps))
+  elif model == 'unbalanced_xor':
+    std_reduce = 6
+    z2 = np.random.randn(N) # Gaussian (2)
+    n=int(N/8)
+    z1 /= std_reduce
+    z2 /= std_reduce
+    d1 = np.column_stack( (z1[0:n],z2[0:n]))
+    d2 = np.column_stack( (z1[n:4*n],z2[n:4*n]+1))
+    d3 = np.column_stack( (z1[4*n:7*n]+1,z2[4*n:7*n]))
+    d4 = np.column_stack( (z1[7*n:8*n]+1,z2[7*n:8*n]+1))
+    return np.concatenate((d1,d2,d3,d4), axis=0)
 
 class Generator(nn.Module):
   def __init__(self, sz_latent,sz_hidden):
@@ -128,6 +139,8 @@ def main(argv):
         xx = np.arange(-3,3,0.25)
         plt.plot(3*xx,np.cos(3*xx)+1, 'r-')
         plt.plot(3*xx,np.cos(3*xx)-1, 'r-')
+      if FLAGS.model == "unbalanced_xor":
+        plt.plot([0,0,1,1],[0,1,0,1], 'ro')
       
       # plot generated data
       plt.plot(g_fake_data[:,0],g_fake_data[:,1],'b.')
@@ -143,7 +156,7 @@ def main(argv):
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
-    flags.DEFINE_enum('model', 'circle', ['circle', 'simple_sin', 'double_sin'], "")
+    flags.DEFINE_enum('model', 'circle', ['circle', 'simple_sin', 'double_sin', 'unbalanced_xor'], "")
     flags.DEFINE_integer('epochs', 2000, "")
     flags.DEFINE_integer('latent_dim', 2, "")
     flags.DEFINE_bool('save', True, "")
