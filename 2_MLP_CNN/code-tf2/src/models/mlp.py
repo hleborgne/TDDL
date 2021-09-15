@@ -14,15 +14,10 @@ class MLP(Model):
         self.flatten = Flatten(
             name='{}_flatten'.format(name))
         
-        #self.hidden_layer_1 = Dense(8*ch, activation=tf.nn.relu,
         self.hidden_layer_1 = Dense(4*ch, activation=tf.nn.relu,
             name='{}_dense_1'.format(name))
         self.hidden_layer_2 = Dense(4*ch, activation=tf.nn.relu,
             name='{}_dense_2'.format(name))
-        # self.dropout_layer = Dropout(0.5,
-            # name='{}_dropout'.format(name))
-        # self.hidden_layer_3 = Dense(2*ch, activation=tf.nn.relu,
-            # name='{}_dense_3'.format(name))
         
         self.output_layer = Dense(10, activation=tf.nn.softmax)
     
@@ -31,7 +26,5 @@ class MLP(Model):
         net = self.flatten(net)
         net = self.hidden_layer_1(net)
         net = self.hidden_layer_2(net)
-        # net = self.dropout_layer(net, training=training) 
-        # net = self.hidden_layer_3(net)
         net = self.output_layer(net)
         return net

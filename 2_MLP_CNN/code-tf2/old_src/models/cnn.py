@@ -13,11 +13,13 @@ class CNN(Model):
         self.input_layer = InputLayer((28, 28, 1),
             name='{}_input'.format(name))
         
+        # self.conv_layer_1 = Conv2D(8*ch, (5,5), activation=tf.nn.relu,
         self.conv_layer_1 = Conv2D(10, (5,5), activation=tf.nn.relu,
             name='{}_conv_1'.format(name))
         self.pool_layer_1 = MaxPool2D(
             name='{}_maxpool_1'.format(name))
 
+        # self.conv_layer_2 = Conv2D(4*ch, (5,5), activation=tf.nn.relu,
         self.conv_layer_2 = Conv2D(20, (5,5), activation=tf.nn.relu,
             name='{}_conv_2'.format(name))
         self.pool_layer_2 = MaxPool2D(
@@ -25,11 +27,13 @@ class CNN(Model):
 
         self.flatten = Flatten(
             name='{}_flatten'.format(name))
+        # self.dropout = Dropout(0.5,
+            # name='{}_dropout'.format(name))
+        # self.dense_layer = Dense(2*ch, activation=tf.nn.relu,
         self.dense_layer = Dense(500, activation=tf.nn.relu,
             name='{}_dense'.format(name))
         
-        self.output_layer = Dense(10, activation=tf.nn.softmax,
-            name='{}_output'.format(name))
+        self.output_layer = Dense(10, activation=tf.nn.softmax)
     
     def call(self, inputs, training=False):
         net = self.input_layer(inputs)
@@ -38,6 +42,7 @@ class CNN(Model):
         net = self.conv_layer_2(net)
         net = self.pool_layer_2(net)
         net = self.flatten(net)
+        # net = self.dropout(net, training=training) 
         net = self.dense_layer(net)
         net = self.output_layer(net)
         return net

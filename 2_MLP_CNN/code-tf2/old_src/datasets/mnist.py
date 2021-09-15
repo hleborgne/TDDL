@@ -8,7 +8,7 @@ def load(batch_size=1, split='train'):
 
     # download the dataset
     dataset = tfds.load(
-        name='mnist:3.*.*',
+        name='mnist',
         split=split,
         data_dir=os.path.join('..', 'data', 'mnist'),
         shuffle_files=True,
@@ -21,8 +21,8 @@ def load(batch_size=1, split='train'):
         return {'image': image, 'label': label}
 
     dataset = dataset.map(prepare, num_parallel_calls=8)
-    dataset = dataset.repeat() if 'train' in split else dataset
-    dataset = dataset.shuffle(60000) if 'train' in split else dataset
+    dataset = dataset.repeat() # repeated to be used as long as needed
+    dataset = dataset.shuffle(60000) # shuffle the dataset
     dataset = dataset.batch(batch_size)
     dataset = dataset.prefetch(2)
 
