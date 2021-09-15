@@ -1,4 +1,4 @@
-# TPDL
+# TD DL
 Travaux dirigés de deep learning
 
 ## TD 1: Fizz Buzz
