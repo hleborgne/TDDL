@@ -55,6 +55,35 @@ color_dataset = gray2color_dataset(train_set)
 for ii in range(20):
     imshowcolor(color_dataset[ii][0] , title='MNIST color example ({})'.format(color_dataset[ii][1]))
 
+class gray2gliter_dataset(torch.utils.data.Dataset):
+    def __init__(self, dataset_in):
+        self.dataset_in = dataset_in
+    def __len__(self):
+        return len(self.dataset_in)
+    def __getitem__(self, idx):
+        x = self.dataset_in.data[idx]
+        noise_a  = torch.randn(x.size())
+        noise_b  = torch.randn(x.size())
+        image = torch.zeros(3,x.shape[0],x.shape[1])
+        label = self.dataset_in.targets[idx]
+        if label<3:
+            image[0,:,:] = x
+            image[1,:,:] = x.mul(noise_a)
+            image[2,:,:] = x.mul(noise_b)
+        elif label <7:
+            image[0,:,:] = noise_a
+            image[1,:,:] = x
+            image[2,:,:] = noise_b
+        else:
+            image[0,:,:] = noise_a
+            image[1,:,:] = x.mul(noise_b)
+            image[2,:,:] = x
+        return (image, label)
+
+gliter_dataset = gray2gliter_dataset(train_set)
+for ii in range(20):
+    imshowcolor(gliter_dataset[ii][0] , title='MNIST gliter example ({})'.format(gliter_dataset[ii][1]))
+
 plt.close()
 
 ### use dataloader
