@@ -4,7 +4,6 @@
 
 import numpy as np
 import torch
-from torch.autograd import Variable
 
 NUM_DIGITS = 10
 
@@ -20,11 +19,11 @@ def fizz_buzz_encode(i):
     else:             return 0
 
 # données d'entraînement (X) et labels (Y)
-X=Variable(torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)]))
-Y=Variable(torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze())
+X=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])
+Y=torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()
 
 # données de test
-X_test=Variable(torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(1,101)]))
+X_test=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(1,101)])
 
 # nombre de neurones dans la couche cachée
 NUM_HIDDEN = 100
