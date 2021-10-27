@@ -89,7 +89,7 @@ for epoch in range(10000):
 # Sortie finale (calcul lisible)
 Y_test_pred = model(X_test)
 val, idx = torch.max(Y_test_pred,1)
-ii=idx.data.numpy()
+ii=idx.data.cpu().numpy()
 output = np.vectorize(fizz_buzz)(raw_data_test, ii)
 print("============== Final result ============")
 print(output)
