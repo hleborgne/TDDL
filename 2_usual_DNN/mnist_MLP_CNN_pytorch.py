@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 
 # we use GPU if available, otherwise CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -132,7 +131,7 @@ for epoch in range(10):
     model.train() # mode "train" agit sur "dropout" ou "batchnorm"
     for batch_idx, (x, target) in enumerate(train_loader):
         optimizer.zero_grad()
-        x, target = Variable(x).to(device), Variable(target).to(device)
+        x, target = x.to(device), target.to(device)
         out = model(x)
         loss = loss_fn(out, target)
         loss.backward()

@@ -15,7 +15,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from torch.autograd import Variable
 
 # Abseil utils from Google https://github.com/abseil/abseil-py
 from absl import app, flags
@@ -83,16 +82,16 @@ def main(argv):
       D.zero_grad() # could be d_optimizer.zero_grad() since the optimizer is specific to the model
 
       # train D on real data
-      d_real_data = Variable(torch.FloatTensor(f_data(batch_size,FLAGS.model))).to(device)
+      d_real_data = (torch.FloatTensor(f_data(batch_size,FLAGS.model))).to(device)
       d_real_decision = D(d_real_data)
-      d_real_error = criterion(d_real_decision, Variable(torch.TODO([batch_size,1])).to(device))
+      d_real_error = criterion(d_real_decision, torch.TODO([batch_size,1])).to(device)
       d_real_error.backward() # compute/store gradients, but don't change params
 
       # train D on fake data
-      d_gen_seed = Variable(torch.FloatTensor( torch.randn(batch_size,latent_dim ) )).to(device)  # TODO rand ou randn ?
+      d_gen_seed = (torch.FloatTensor( torch.randn(batch_size,latent_dim ) )).to(device)  # TODO rand ou randn ?
       d_fake_data = G( d_gen_seed ).detach()  # detach to avoid training G on these labels
       d_fake_decision = D(d_fake_data)
-      d_fake_error = criterion(d_fake_decision, Variable(torch.TODO([batch_size,1]).to(device)))
+      d_fake_error = criterion(d_fake_decision, torch.TODO([batch_size,1]).to(device))
       d_fake_error.backward()
       d_optimizer.step()     # Only optimizes D's parameters; changes based on stored gradients from backward()
 
@@ -101,10 +100,10 @@ def main(argv):
     for ii in range(20):  # train G for 20 steps
       G.zero_grad()
 
-      g_gen_seed = Variable(torch.FloatTensor( torch.randn(batch_size,latent_dim ))).to(device)
+      g_gen_seed = (torch.FloatTensor( torch.randn(batch_size,latent_dim ))).to(device)
       g_fake_data = G( g_gen_seed )
       dg_fake_decision = D(g_fake_data)
-      g_error = criterion(dg_fake_decision, Variable(torch.TODO([batch_size,1]).to(device)))  # Train G to pretend it's genuine
+      g_error = criterion(dg_fake_decision, torch.TODO([batch_size,1]).to(device))  # Train G to pretend it's genuine
 
       g_error.backward()
       g_optimizer.step()  # Only optimizes G's parameters
@@ -114,7 +113,7 @@ def main(argv):
       print("Epoch %s: D (%1.4f real_err, %1.4f fake_err) G (%1.4f err) " % (epoch, dre, dfe, ge))
 
     if epoch % 60 == 0:
-      g_gen_seed = Variable(torch.FloatTensor( torch.randn(1000,latent_dim ))).to(device)
+      g_gen_seed = (torch.FloatTensor( torch.randn(1000,latent_dim ))).to(device)
       g_fake_data = G( g_gen_seed ).detach().to("cpu")
       plt.cla()
 

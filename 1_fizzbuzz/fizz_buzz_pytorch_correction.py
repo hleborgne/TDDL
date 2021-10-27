@@ -4,7 +4,6 @@
 
 import numpy as np
 import torch
-from torch.autograd import Variable
 
 NUM_DIGITS = 10
 
@@ -25,10 +24,11 @@ def fizz_buzz_encode(i):
 # trY = np.array([fizz_buzz_encode(i)          for i in range(101, 2 ** NUM_DIGITS)]).squeeze()
 # X = torch.from_numpy(trX).type(torch.FloatTensor)
 # Y = torch.from_numpy(trY) # type LongTensors as labels
+# ci-dessous pour "vieux" pytorch nécessitant [from torch.autograd import Variable]
 # X=Variable(X)
 # Y=Variable(Y)
-X_train=Variable(torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)]))
-Y_train=Variable(torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze())
+X_train=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])
+Y_train=torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()
 
 # [exo 1.2] données de validation (méthode: tirage aléatoire du train initial)
 # [exo 2.2] ici on peut changer la taille de l'ensemble d'apprentissage
@@ -41,7 +41,7 @@ X_val,   Y_val   = X_train[0:NUM_VAL,:], Y_train[0:NUM_VAL]
 X_train, Y_train = X_train[NUM_VAL: ,:], Y_train[NUM_VAL:]
 
 # données de test
-X_test=Variable(torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(1,101)]))
+X_test=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(1,101)])
 raw_data_test = np.arange(1, 101) # valeurs de test
 
 # nombre de neurones dans la couche cachée
