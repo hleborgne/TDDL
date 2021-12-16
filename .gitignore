@@ -1,4 +1,7 @@
 2_MLP_CNN/model_cnn.pth
+6_nlp_scratch/data*
+6_nlp_scratch/log/*
+6_nlp_scratch/*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
