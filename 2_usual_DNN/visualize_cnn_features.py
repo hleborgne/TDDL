@@ -47,7 +47,7 @@ class CNNNet(nn.Module):
 model = CNNNet()
 if device.type=='cuda':
     model.cuda()
-model.load_state_dict(torch.load('model_cnn.pth', map_location=device))
+model.load_state_dict(torch.load('params_model_cnn.pth', map_location=device))
 model.eval()
 
 # define hooks to register feature maps

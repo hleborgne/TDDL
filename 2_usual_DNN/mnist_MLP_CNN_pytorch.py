@@ -88,7 +88,6 @@ class MLPNet(nn.Module):
         x = self.fc3(x)
         return x
 
-
 NUM_CONV_1=10 # try 32
 NUM_CONV_2=20 # try 64
 NUM_FC=500 # try 1024
@@ -157,5 +156,11 @@ for epoch in range(10):
 # BONUS: save model to disk (for further inference)
 if is_cnn == True:
     filename = 'model_cnn.pth'
-    torch.save(model.state_dict(), filename)
+    torch.save(model.state_dict(), "params_"+filename)
+    torch.save(model, filename)
+    print("saved model to {}".format(filename))
+else:
+    filename = 'model_mlp.pth'
+    torch.save(model.state_dict(), "params_"+filename)
+    torch.save(model, filename)
     print("saved model to {}".format(filename))
