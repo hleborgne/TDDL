@@ -2,6 +2,11 @@
 6_nlp_scratch/data*
 6_nlp_scratch/log/*
 6_nlp_scratch/*.pt
+6_nlp_scratch/README
+1_fizzbuzz/data/MNIST
+1_fizzbuzz/TD1_CS.*
+
+*.pth
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
