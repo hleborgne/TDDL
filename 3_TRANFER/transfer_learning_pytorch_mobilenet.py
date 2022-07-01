@@ -10,7 +10,6 @@
 #              FlickrLogos: www.multimedia-computing.de/flickrlogos
 
 import torch
-import torchvision
 import numpy as np
 from sklearn.model_selection import train_test_split
 import sys
@@ -32,7 +31,7 @@ data_transforms = transforms.Compose([
 
 # on lit une première fois les images du dataset
 # TODO adapter le path selon l'endroit où sont stockées les données
-image_directory = "../data/"
+image_directory = "data/"
 dataset_full = datasets.ImageFolder(image_directory, data_transforms)
 
 # on split en train, val et test à partir de la liste complète
