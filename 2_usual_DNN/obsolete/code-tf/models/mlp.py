@@ -8,21 +8,22 @@ K = tf.keras
 
 
 
-def build(ch):
-
-    # input
-    x = K.layers.Input(shape=[28,28,1], dtype=tf.float32)
-
-    # hidden layers
-    h = K.layers.Flatten()(x) #1x(16xch)
-    # h = K.layers.Dropout(0.5)(h) # some regularization
-    h = K.layers.Dense(units=8*ch, activation=tf.nn.relu)(h)
-    #h = K.layers.Dropout(0.5)(h) # some regularization
-    h = K.layers.Dense(units=4*ch, activation=tf.nn.relu)(h)
-    h = K.layers.Dropout(0.5)(h) # some regularization
-    h = K.layers.Dense(units=2*ch, activation=tf.nn.relu)(h)
+class MLP(K.Model):
     
-    # output
-    y = K.layers.Dense(units=10)(h)
+    def __init__(self):
+        super(MLP, self).__init__()
+        self.flatten = K.layers.Flatten()
+        self.dense_1 = K.layers.Dense(units=512, activation=tf.nn.relu)
+        self.dense_2 = K.layers.Dense(units=256, activation=tf.nn.relu)
+        self.dense_3 = K.layers.Dense(units=128, activation=tf.nn.relu)
+        self.dropout = K.layers.Dropout(0.5)
+        self.dense_4 = K.layers.Dense(10)
 
-    return K.Model(inputs=x, outputs=y)
+    def call(self, x, training=True):
+        h = self.flatten(x) 
+        h = self.dense_1(h) 
+        h = self.dense_2(h) 
+        h = self.dense_3(h) 
+        h = self.dropout(h, training=training) 
+        y = self.dense_4(h)
+        return y

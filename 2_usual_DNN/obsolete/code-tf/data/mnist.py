@@ -49,7 +49,12 @@ def load(batch_size):
         dataset = dataset.apply(tf.data.experimental.map_and_batch(
             map_func=parse, batch_size=batch_size, num_parallel_batches=8))
         
-        return dataset.make_one_shot_iterator(), dataset.output_types, dataset.output_shapes
+        if shuffle_and_repeat: 
+            iterator = dataset.make_one_shot_iterator()
+        else:
+            iterator = dataset.make_initializable_iterator()
+            
+        return iterator, dataset.output_types, dataset.output_shapes
 
     train_iterator, _, _ = make_iterator(x_train, y_train, shuffle_and_repeat=True)
     valid_iterator, _, _ = make_iterator(x_valid, y_valid)
