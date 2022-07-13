@@ -151,8 +151,10 @@ def main(argv):
     filename = "model_gan_"+FLAGS.model+".pth"
     torch.save({
         'G_state_dict': G.state_dict(),
-        'D_state_dict': D.state_dict()
+        'D_state_dict': D.state_dict(),
+        'model_type': FLAGS.model
         },filename)
+    print('model saved in '+filename)
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
