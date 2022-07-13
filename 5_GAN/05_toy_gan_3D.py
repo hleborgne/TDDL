@@ -95,7 +95,7 @@ def main(argv):
   batch_size = 32
 
   fig = plt.figure()
-  ax = fig.gca(projection='3d')
+  ax = fig.add_subplot(111, projection='3d')
   for epoch in range(FLAGS.epochs):
     for ii in range(20):  # train D for 20 steps
       D.zero_grad() # could be d_optimizer.zero_grad() since the optimizer is specific to the model
