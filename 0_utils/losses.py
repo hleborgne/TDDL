@@ -34,7 +34,23 @@ sum_exp_in = torch.sum(torch.exp(input),1).unsqueeze(1).expand(-1,C)
 # sum_exp_in = torch.sum(torch.exp(input),1).unsqueeze(1).repeat_interleave(C,dim=1)
 # if sei=torch.sum(torch.exp(input),1) you can use e.g sei[:,None].expand(-1,C)
 criterion(torch.log(torch.mul(1/sum_exp_in,exp_in)), target)
-print("NLLLoss+LogSoftmax {:1.4f}".format(criterion(torch.log(torch.mul(1/sum_exp_in,exp_in)), target)))
+print("NLLLoss+LogSoftmax (naive) {:1.4f}".format(criterion(torch.log(torch.mul(1/sum_exp_in,exp_in)), target)))
+# the (non naive implementation) LogSoftMax can be obtained with:
+# note: dim is mandatory now. It is the dimension along which log_softmax iscomputed,
+#       that is, the the dimension C corresponding to classes (not N, that are samples!)
+lsm = nn.LogSoftmax(dim=1)
+print("NLLLoss+LogSoftmax (class) {:1.4f}".format(criterion(lsm(input), target)))
+# or with the "functional" version:
+print("NLLLoss+LogSoftmax (func.) {:1.4f}".format(criterion(torch.nn.functional.log_softmax(input,dim=1)
+, target)))
+
+# in detail the (naive) NLLLoss is computed as
+lsm_input=lsm(input) # from the LogSoftMax inputs
+neg_lsm_input = -lsm_input
+cumul=0
+for i in range(N):
+    cumul += neg_lsm_input[i,target[i]]
+print("NLLLoss+LogSoftmax (doube naive) {:1.4f}".format(cumul/N))
 
 #######################################################
 ### multiclass non-exclusive (multi-sigmoides)
