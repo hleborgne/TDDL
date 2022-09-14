@@ -1,13 +1,7 @@
-import numpy as np
 import matplotlib.pyplot as plt
-
-# torch stuff
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
-
-# Abseil utils from Google https://github.com/abseil/abseil-py
 from absl import app, flags
 
 # we use GPU if available, otherwise CPU
@@ -30,7 +24,7 @@ def main(argv):
     all_model  = torch.load(FLAGS.model_path, map_location=device)
     size_out   = all_model['G_state_dict']['fout.weight'].shape[0]
     size_latent= all_model['G_state_dict']['fc1.weight'].shape[0]
-    latent_dim = all_model['latent_dim']
+    latent_dim = all_model['G_state_dict']['fc1.weight'].shape[1]
 
     G = Generator(latent_dim,size_latent,size_out).to(device)
     G.load_state_dict(all_model['G_state_dict'])
@@ -38,11 +32,18 @@ def main(argv):
 
     gen_seed = (torch.FloatTensor(torch.randn(N_data,latent_dim))).to(device)
     fake_data = G( gen_seed ).detach().to("cpu")
-    plt.cla()
-    plt.plot(fake_data[:,0],fake_data[:,1],'b.')
-    # plt.draw()
-    plt.show()
-
+    if fake_data.shape[1]==2:
+        plt.cla()
+        plt.plot(fake_data[:,0],fake_data[:,1],'b.')
+        # plt.draw()
+        plt.show()
+    elif fake_data.shape[1]==3:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot(fake_data[:,0],fake_data[:,1],fake_data[:,2],'b.')
+        plt.show()
+    else:
+        print('!!! output data should be 2D or 3D (here dim={})'.format(fake_data.shape[1]))
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
