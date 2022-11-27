@@ -3,6 +3,9 @@ import numpy as np
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
+#def relu(x):
+#    return np.maximum(x, 0)
+
 def logicNN(X,t): # X=data and t=ttarget (labels)
     N = 4
     epochs = 10000
@@ -12,14 +15,14 @@ def logicNN(X,t): # X=data and t=ttarget (labels)
 
     for e in range(epochs):
         ### forward pass
-        out1 = sigmoid( ############  TODO  )
-        out2 = sigmoid( ############  TODO  )
+        out1 = sigmoid(np.dot(X,W1))
+        out2 = sigmoid(np.dot(out1,W2))
 
         ### backprop
-        error = ################# TODO
+        error = (t-out2) # we do NOT need the actuel square error, only its derivative (below)
         # chain rule
-        d2 = ############## TODO
-        d1 = ############## TODO
+        d2 = 2 * error * (out2 * (1-out2))
+        d1 = d2.dot(W2.T) * (out1*(1-out1))
         # SGD
         W2 += lr * out1.T.dot(d2)
         W1 += lr * X.T.dot(d1)
