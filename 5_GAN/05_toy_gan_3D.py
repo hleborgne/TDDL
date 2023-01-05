@@ -170,6 +170,6 @@ if __name__ == '__main__':
     FLAGS = flags.FLAGS
     flags.DEFINE_enum('model', 'helix', ['helix','bike_accident','saddle_point'], "")
     flags.DEFINE_integer('epochs', 3000, "")
-    flags.DEFINE_integer('latent_dim', 2, "")
+    flags.DEFINE_integer('latent_dim', 3, "")
     flags.DEFINE_bool('save', False, "")
     app.run(main)
