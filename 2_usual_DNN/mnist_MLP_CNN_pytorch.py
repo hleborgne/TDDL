@@ -142,6 +142,7 @@ for epoch in range(10):
     model.eval()
     correct = 0
     with torch.no_grad():
+        confusion = torch.zeros(NUM_CLASSES,NUM_CLASSES)
         for batch_idx, (x, target) in enumerate(test_loader):
             x, target = x.to(device), target.to(device)
             out = model(x)
@@ -149,9 +150,16 @@ for epoch in range(10):
             # _, prediction = torch.max(out.data, 1)
             prediction = out.argmax(dim=1, keepdim=True) # index of the max log-probability
             correct += prediction.eq(target.view_as(prediction)).sum().item()
+            # since 'prediction' and 'target' may be on the GPU memory
+            # thus (i,j) are on the GPU as well. They must be transfered
+            # to the CPU, where 'confusion' has been allocated
+            for i,j in zip(prediction,target):
+                confusion[i.to("cpu"),j.to("cpu")] += 1
     taux_classif = 100. * correct / len(test_loader.dataset)
     print('Accuracy: {}/{} (tx {:.2f}%, err {:.2f}%)\n'.format(correct,
      len(test_loader.dataset), taux_classif, 100.-taux_classif))
+    torch.set_printoptions(sci_mode=False)
+    print(confusion)
 
 # BONUS: save model to disk (for further inference)
 if is_cnn == True:
