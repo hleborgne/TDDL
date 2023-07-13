@@ -1,10 +1,15 @@
 Train a multilayer perceptron (MLP) and a convolutional neural network (CNN) to classify handwritten digits ([MNIST](http://yann.lecun.com/exdb/mnist/)). Implementation [PyTorch](https://pytorch.org/) and [Tensorflow](https://www.tensorflow.org/) with *eager execution*.
 
 ## Requirements (example)
-Originally based on Python 3.7.x. Works with Python 3.8.5
-- Pytorch 1.1.0 to 1.7.0 (see warning below for older version)
+Originally based on Python 3.7.x. Works with Python 3.11.4 (July 2023)
+- Pytorch 1.1.0 to 2.0.1 (see warning below for older version)
 
-You should install using [conda](https://docs.conda.io/en/latest/miniconda.html) to avoid installing CUDA and CuDNN by yourself. Some Python packages are required as well:
+You should install using [conda](https://docs.conda.io/en/latest/miniconda.html) to avoid installing CUDA and CuDNN by yourself. However, you must install the NVIDIA drivers:
+```
+ubuntu-drivers devices # --> liste des drivers disponibles
+sudo apt install nvidia-driver-535
+```
+Some Python packages are required as well:
 - matplotlib
 - NumPy (installed with tf/pytorch)
 
@@ -20,7 +25,7 @@ warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
 To work on the exercice use program `mnist_MLP_CNN_pytorch_exercice.py` that contains TODOs.
 
 ## Run the program (correction)
-For PyTorch, choose the model into `mnist_MLP_CNN_pytorch.py` (line 112) then run:
+For PyTorch, choose the model into `mnist_MLP_CNN_pytorch.py` (line 117--119) then run:
 
 ```bash
 python mnist_MLP_CNN_pytorch.py
