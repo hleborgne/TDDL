@@ -27,8 +27,8 @@ def fizz_buzz_encode(i):
 # ci-dessous pour "vieux" pytorch nécessitant [from torch.autograd import Variable]
 # X=Variable(X)
 # Y=Variable(Y)
-X_train=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])
-Y_train=torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()
+X_train=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])) # le np.array() n'est pas indispensable mais accélère le process
+Y_train=torch.LongTensor(np.array([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)])).squeeze()
 
 # [exo 1.2] données de validation (méthode: tirage aléatoire du train initial)
 # [exo 2.2] ici on peut changer la taille de l'ensemble d'apprentissage
@@ -41,7 +41,7 @@ X_val,   Y_val   = X_train[0:NUM_VAL,:], Y_train[0:NUM_VAL]
 X_train, Y_train = X_train[NUM_VAL: ,:], Y_train[NUM_VAL:]
 
 # données de test
-X_test=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(1,101)])
+X_test=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(1,101)]))
 raw_data_test = np.arange(1, 101) # valeurs de test
 
 # nombre de neurones dans la couche cachée
@@ -86,7 +86,7 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
     # calcul coût  (et affichage)
     loss = loss_fn( model(X_train), Y_train)
     if epoch%100 == 0:
-        print('epoch {} training loss {}'.format(epoch, loss.item()))
+        print('epoch {:5d} training loss {:1.4f}'.format(epoch, loss.item()))
 
     # affichage de la performance courante
     #   sur train (1-erreur empirique)
@@ -94,9 +94,9 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
     # [exo 2.4] l'influence du nb d'itérations doit se faire sur val normalement
     if(epoch%1000==0):
         Y_train_pred = model(X_train)
-        print("train perf: ", np.mean(Y_train.data.numpy() == Y_train_pred.max(1)[1].data.numpy() ) )
+        print("train perf: {:1.2f}".format( np.mean(Y_train.data.numpy() == Y_train_pred.max(1)[1].data.numpy() )))
         Y_val_pred = model(X_val)
-        print("val perf: ", np.mean(Y_val.data.numpy() == Y_val_pred.max(1)[1].data.numpy() ) )
+        print("  val perf: {:1.2f}".format( np.mean(Y_val.data.numpy() == Y_val_pred.max(1)[1].data.numpy() )))
 
 # Sortie finale (affichage sur les données de test)
 # ci-dessous un code plus long mais plus lisible
@@ -113,4 +113,4 @@ print ([fizz_buzz(i, x) for (i, x) in predictions])
 
 # [exo 1.1] Performances de test
 gtY = np.array([fizz_buzz_encode(i) for i in raw_data_test])
-print("test perf: ", np.mean(gtY == Y_test_pred.max(1)[1].data.numpy()))
+print("test perf: {:1.2f}".format(np.mean(gtY == Y_test_pred.max(1)[1].data.numpy())))

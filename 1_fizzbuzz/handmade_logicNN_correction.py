@@ -6,7 +6,7 @@ def sigmoid(x):
 #def relu(x):
 #    return np.maximum(x, 0)
 
-def logicNN(X,t): # X=data and t=ttarget (labels)
+def logicNN(X,t): # X=data and t=target (labels)
     N = 4
     epochs = 10000
     lr = 0.1
@@ -19,7 +19,7 @@ def logicNN(X,t): # X=data and t=ttarget (labels)
         out2 = sigmoid(np.dot(out1,W2))
 
         ### backprop
-        error = (t-out2) # we do NOT need the actuel square error, only its derivative (below)
+        error = (t-out2) # we do NOT need the actual square error, only its derivative (below)
         # chain rule
         d2 = 2 * error * (out2 * (1-out2))
         d1 = d2.dot(W2.T) * (out1*(1-out1))
