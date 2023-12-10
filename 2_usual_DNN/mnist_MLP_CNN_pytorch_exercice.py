@@ -14,8 +14,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # we use GPU if available, otherwise CPU
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(device)
+# NB: with several GPUs, "cuda" --> "cuda:0" or "cuda:1"...
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Using device:", device, f'({torch.cuda.get_device_name(device)})' if torch.cuda.is_available() else '')
 
 # import datasets 
 from torchvision import datasets, transforms
