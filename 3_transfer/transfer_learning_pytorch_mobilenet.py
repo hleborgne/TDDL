@@ -118,7 +118,7 @@ def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10
 
 # Récupérer un réseau pré-entraîné (MobileNet v2)
 print("Récupération du MobileNet pré-entraîné...")
-my_net = models.mobilenet_v2(pretrained=True)
+my_net = models.mobilenet_v2(weights='MobileNet_V2_Weights.IMAGENET1K_V1')
 
 #===== Transfer learning "simple" (sans fine tuning) =====
 
@@ -160,7 +160,7 @@ torch.cuda.empty_cache()
 #===== Fine tuning =====
 
 # on réinitialise MobileNet
-my_net_ft = models.mobilenet_v2(pretrained=True)
+my_net_ft = models.mobilenet_v2(weights='MobileNet_V2_Weights.IMAGENET1K_V1')
 my_net_ft.classifier[1] = nn.Linear(in_features=my_net_ft.classifier[1].in_features, out_features=nb_classes, bias=True)
 my_net_ft.to(device)
 

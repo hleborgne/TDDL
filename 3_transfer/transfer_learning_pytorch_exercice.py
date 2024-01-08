@@ -117,7 +117,7 @@ def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10
 
 # Récupérer un réseau pré-entraîné (resnet-18)
 print("Récupération du ResNet-18 pré-entraîné...")
-my_net = models.resnet18(pretrained=True)
+my_net = models.resnet18(weights='ResNet18_Weights.IMAGENET1K_V1')
 
 #===== Transfer learning "simple" (sans fine tuning) =====
 
@@ -153,7 +153,7 @@ print("Accuracy (test): %.1f%%" % (100 * accuracy))
 #===== Fine tuning =====
 
 # on réinitialise resnet
-my_net = models.resnet18(pretrained=True)
+my_net = models.resnet18(weights='ResNet18_Weights.IMAGENET1K_V1')
 my_net.fc = nn.Linear(in_features=TODO, out_features=TODO, bias=True)
 my_net.to(device)
 
