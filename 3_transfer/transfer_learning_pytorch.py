@@ -140,6 +140,7 @@ my_net.train(True) # pas indispensable ici, mais bonne pratique de façon géné
 # on limite l'optimisation aux paramètres de la nouvelle couche
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(my_net.fc.parameters(), lr=0.001, momentum=0.9)
+# optimizer = optim.Adam(my_net.fc.parameters(), lr=0.001, amsgrad = True)
 
 print("Apprentissage en transfer learning")
 my_net.train(True)
