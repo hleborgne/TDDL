@@ -83,7 +83,12 @@ def evaluate(model, dataset):
     loader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=False, num_workers=2)
     for data in loader:
         inputs, labels = data
-        oh_labels = torch.nn.functional.one_hot(labels)
+        oh_labels = torch.nn.functional.one_hot(labels, num_classes = nb_classes)
+        # Attention, si on ne précise pas le nombre de classes, celui-ci est inféré
+        # à partir de la valeur maximale des labels au sein d'un batch, mais cela peut
+        # conduire à une erreur si toutes les classes du problème ne sont pas 
+        # représentées dans un batch donné. D'où l'intérêt de préciser le nombre de
+        #classes avec l'argument num_classes
         oh_labels = oh_labels.type(torch.FloatTensor)
         inputs, oh_labels = inputs.to(device), oh_labels.to(device)
         outputs = model(inputs)
@@ -108,7 +113,12 @@ def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10
         print("EPOCH % i" % epoch)
         for i, data in enumerate(loader_train): # itère sur les minibatchs via le loader apprentissage
             inputs, labels = data
-            labels = torch.nn.functional.one_hot(labels)
+            labels = torch.nn.functional.one_hot(labels, num_classes = nb_classes)
+            # Attention, si on ne précise pas le nombre de classes, celui-ci est inféré
+            # à partir de la valeur maximale des labels au sein d'un batch, mais cela peut
+            # conduire à une erreur si toutes les classes du problème ne sont pas 
+            # représentées dans un batch donné. D'où l'intérêt de préciser le nombre de
+            #classes avec l'argument num_classes
             labels = labels.type(torch.FloatTensor)
             inputs, labels = inputs.to(device), labels.to(device) # on passe les données sur CPU / GPU
             optimizer.zero_grad() # on réinitialise les gradients
