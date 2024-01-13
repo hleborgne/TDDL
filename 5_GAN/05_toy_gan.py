@@ -29,12 +29,12 @@ def f_data(N, model='circle'):
     t = np.random.rand(N) # Uniform
     return np.column_stack((3*np.cos(t*2*np.pi)+0.1*eps,3*np.sin(t*2*np.pi)+0.1*eps))
 
-  z1 = np.random.randn(N) # Gaussian
+  z1 = 3*np.random.randn(N) # Gaussian
   if model == 'simple_sin':
-    return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+0.1*eps))
+    return np.column_stack((z1+0.1*eps,np.cos(z1)+0.1*eps))
   elif model == 'double_sin':
-    z2 = np.random.randn(N) # Gaussian (2)
-    return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+np.tanh(3*z2)+0.1*eps))
+    z2 = 3*np.random.randn(N) # Gaussian (2)
+    return np.column_stack((z1+0.1*eps,np.cos(z1)+np.tanh(z2)+0.1*eps))
   elif model == 'unbalanced_xor':
     std_reduce = 6
     z2 = np.random.randn(N) # Gaussian (2)
@@ -85,6 +85,12 @@ def main(argv):
   criterion = nn.BCELoss()
   d_optimizer = optim.SGD(D.parameters(), lr=1e-3, momentum=0.8)
   g_optimizer = optim.SGD(G.parameters(), lr=1e-3, momentum=0.8)
+  ## ne marche pas trop
+  # d_optimizer = optim.Adam(D.parameters(), lr=1e-3, betas=[0.9,0.999])
+  # g_optimizer = optim.Adam(G.parameters(), lr=1e-3, betas=[0.9,0.999])
+  ## marche mieux (Adam + Nesterov)
+  # d_optimizer = optim.NAdam(D.parameters(), lr=1e-3, betas=[0.9,0.999], momentum_decay=0.04)
+  # g_optimizer = optim.NAdam(G.parameters(), lr=1e-3, betas=[0.9,0.999], momentum_decay=0.04)
   
   batch_size = 32
 

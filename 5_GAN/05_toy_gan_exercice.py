@@ -29,12 +29,12 @@ def f_data(N, model='circle'):
     t = np.random.rand(N) # Uniform
     return np.column_stack((TODO,TODO))
 
-  z1 = np.random.randn(N) # Gaussian
+  z1 = 3*np.random.randn(N) # Gaussian
   if model == 'simple_sin':
     return np.column_stack((TODO,TODO))
   elif model == 'double_sin':
-    z2 = np.random.randn(N) # Gaussian (2)
-    return np.column_stack((3*z1+0.1*eps,np.cos(3*z1)+np.tanh(3*z2)+0.1*eps))
+    z2 = 3*np.random.randn(N) # Gaussian (2)
+    return np.column_stack((z1+0.1*eps,np.cos(z1)+np.tanh(z2)+0.1*eps))
 
 class Generator(nn.Module):
   def __init__(self, sz_latent,sz_hidden):
