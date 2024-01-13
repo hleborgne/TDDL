@@ -108,7 +108,7 @@ def main(argv):
 
       # train D on fake data
       d_gen_seed = (torch.FloatTensor(torch.randn(batch_size,latent_dim))).to(device)
-      d_fake_data = G( d_gen_seed ).detach()  # detach to avoid training G on these labels
+      d_fake_data = G(d_gen_seed).detach()  # detach to avoid training G on these labels
       d_fake_decision = D(d_fake_data)
       d_fake_error = criterion(d_fake_decision, (torch.zeros([batch_size,1]).to(device)))  # zeros = fake
       d_fake_error.backward()
@@ -120,7 +120,7 @@ def main(argv):
       G.zero_grad()
 
       g_gen_seed = (torch.FloatTensor(torch.randn(batch_size,latent_dim))).to(device)
-      g_fake_data = G( g_gen_seed )
+      g_fake_data = G(g_gen_seed)
       dg_fake_decision = D(g_fake_data)
       g_error = criterion(dg_fake_decision, (torch.ones([batch_size,1]).to(device)))  # Train G to pretend it's genuine
 
@@ -129,7 +129,7 @@ def main(argv):
 
       ge = extract(g_error)[0]
     if epoch % 20 ==0:
-      print("Epoch %s: D (%1.4f real_err, %1.4f fake_err) G (%1.4f err) " % (epoch, dre, dfe, ge))
+      print("Epoch %4d: D (%1.4f real_err, %1.4f fake_err) G (%1.4f err) " % (epoch, dre, dfe, ge))
 
     if epoch % 60 == 0:
       g_gen_seed = (torch.FloatTensor(torch.randn(1000,latent_dim))).to(device)
