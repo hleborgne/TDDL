@@ -26,10 +26,10 @@ elif model == 'rnn-adam':
 def evaluate(line_tensor):
     hidden = rnn.initHidden()
 
-    for i in range(line_tensor.size()[0]):
-        if model == 'lstm':
-            output, hidden = rnn(line_tensor)
-        else:
+    if model == 'lstm':
+        output, hidden = rnn(line_tensor)
+    else:
+        for i in range(line_tensor.size()[0]):
             output, hidden = rnn(line_tensor[i], hidden)
 
     return output
