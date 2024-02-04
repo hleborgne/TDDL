@@ -58,8 +58,8 @@ def get_activation(name):
         activation[name] = output.detach()
     return hook
 
-model.conv_1.register_forward_hook(get_activation('conv_1'))
-model.conv_2.register_forward_hook(get_activation('conv_2'))
+h1 = model.conv_1.register_forward_hook(get_activation('conv_1'))
+h2 = model.conv_2.register_forward_hook(get_activation('conv_2'))
 
 # loop to display image + feature maps
 nos_image=0
@@ -102,6 +102,10 @@ while (nos_image>=0):
     plt.pause(0.5)
     nos_image = int(input('Image number ?: '))
 plt.close()
+
+# detach the hooks
+h1.remove()
+h2.remove()
 
 # 115 9 4
 # 247 2 4
