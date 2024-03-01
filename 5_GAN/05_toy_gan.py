@@ -9,6 +9,9 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+# import pkgutil # deprecated
+import importlib
 
 # torch stuff
 import torch
@@ -163,11 +166,23 @@ def main(argv):
         'model_type': FLAGS.model
         },filename)
     print('model saved in '+filename)
+  if FLAGS.onnx == True:
+    loader = importlib.util.find_spec('onnx')
+    if loader:
+      loader.loader.load_module() # import onnx
+      onnx_filename = "model_G_"+FLAGS.model+".onnx"
+      x = (torch.FloatTensor(torch.randn(batch_size,latent_dim))).to(device)
+      torch.onnx.export(G,x,onnx_filename,export_params=True,verbose=False, input_names=[ "actual_input" ], output_names=[ "output" ])
+      print('ONNX export saved in '+onnx_filename)
+    else:
+      print('module ONNX not installed: pip/conda install onnx')
+
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
     flags.DEFINE_enum('model', 'circle', ['circle', 'simple_sin', 'double_sin', 'unbalanced_xor'], "")
     flags.DEFINE_integer('epochs', 2000, "")
     flags.DEFINE_integer('latent_dim', 2, "")
-    flags.DEFINE_bool('save', True, "")
+    flags.DEFINE_bool('save', False, "to save the model (in pyTorch)")
+    flags.DEFINE_bool('onnx', False, "to export the model in ONNX format")
     app.run(main)
