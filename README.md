@@ -39,6 +39,17 @@ Modèle génératif (GAN) sur exemples jouet
 conda activate cs_td2
 conda install -c anaconda absl-py 
 ```
+Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé (ou ajouter Aidge à l'environnement `cs_td2`):
+```
+conda create --name aidge python=3.8
+conda activate aidge
+git clone --recursive https://gitlab.eclipse.org/eclipse/aidge/aidge.git
+cd aidge && pip install .
+
+# test￼
+python -c "import aidge_core; import aidge_backend_cpu; print(aidge_core.Tensor.get_available_backends())"
+
+```
 
 ## TD 5: NLP et Tensorboard
 
