@@ -10,9 +10,13 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import importlib
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection # dessin cube (ground truth)
 
 # avoid a numpy warning (FIXME proprement...)
-np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)                 
+# np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)                 
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
 # torch stuff
 import torch
@@ -52,6 +56,45 @@ def f_data(N, model='helix'):
     y = np.random.rand(N)*4-2
     z = x**2-y**2+0.1*eps
     return np.column_stack((x,y,z))
+  if model == 'full_cube':
+    x = np.random.rand(N)*4-2
+    y = np.random.rand(N)*4-2
+    z = np.random.rand(N)*4-2
+    return np.column_stack((x,y,z))
+
+def get_face_cube():
+  faces = []
+  faces.append(np.zeros([5,3]))
+  faces.append(np.zeros([5,3]))
+  faces.append(np.zeros([5,3]))
+  faces.append(np.zeros([5,3]))
+  faces.append(np.zeros([5,3]))
+  faces.append(np.zeros([5,3]))
+  # Bottom face
+  faces[0][:,0] = [-2,-2,2,2,-2]
+  faces[0][:,1] = [-2,2,2,-2,-2]
+  faces[0][:,2] = [-2,-2,-2,-2,-2]
+  # Top face
+  faces[1][:,0] = [-2,-2,2,2,-2]
+  faces[1][:,1] = [-2,2,2,-2,-2]
+  faces[1][:,2] = [2,2,2,2,2]
+  # Left Face
+  faces[2][:,0] = [-2,-2,-2,-2,-2]
+  faces[2][:,1] = [-2,2,2,-2,-2]
+  faces[2][:,2] = [-2,-2,2,2,-2]
+  # Left Face
+  faces[3][:,0] = [2,2,2,2,2]
+  faces[3][:,1] = [-2,2,2,-2,-2]
+  faces[3][:,2] = [-2,-2,2,2,-2]
+  # front face
+  faces[4][:,0] = [-2,2,2,-2,-2]
+  faces[4][:,1] = [-2,-2,-2,-2,-2]
+  faces[4][:,2] = [-2,-2,2,2,-2]
+  # front face
+  faces[5][:,0] = [-2,2,2,-2,-2]
+  faces[5][:,1] = [2,2,2,2,2]
+  faces[5][:,2] = [-2,-2,2,2,-2]
+  return faces
 
 class Generator(nn.Module):
   def __init__(self, sz_latent,sz_hidden):
@@ -96,6 +139,8 @@ def main(argv):
 
   fig = plt.figure()
   ax = fig.add_subplot(111, projection='3d')
+
+  face_cube = get_face_cube()
   for epoch in range(FLAGS.epochs):
     for ii in range(20):  # train D for 20 steps
       D.zero_grad() # could be d_optimizer.zero_grad() since the optimizer is specific to the model
@@ -151,10 +196,13 @@ def main(argv):
         x, y = np.meshgrid(x,y)
         z = x**2 - y**2
         ax.plot_wireframe(x,y,z, rstride=5, cstride=5, color="red")
-      
+      if FLAGS.model == 'full_cube':
+        ax.add_collection3d(Poly3DCollection(face_cube, facecolors='cyan', linewidths=1, edgecolors='k', alpha=.25))
+
       # plot generated data
       ax.plot(g_fake_data[:,0],g_fake_data[:,1],g_fake_data[:,2],'b.')
       plt.draw()
+      plt.title('Inference with PyTorch')
       plt.pause(0.001)
   plt.show()
   if FLAGS.save == True :
@@ -165,11 +213,22 @@ def main(argv):
         'model_type': FLAGS.model
         },filename)
     print('model saved in '+filename)
+  if FLAGS.onnx == True:
+    loader = importlib.util.find_spec('onnx')
+    if loader:
+      loader.loader.load_module() # import onnx
+      onnx_filename = "model_G_"+FLAGS.model+".onnx"
+      x = (torch.FloatTensor(torch.randn(batch_size,latent_dim))).to(device)
+      torch.onnx.export(G,x,onnx_filename,export_params=True,verbose=False, input_names=[ "actual_input" ], output_names=[ "output" ])
+      print('ONNX export saved in '+onnx_filename)
+    else:
+      print('module ONNX not installed: pip/conda install onnx')
 
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
-    flags.DEFINE_enum('model', 'helix', ['helix','bike_accident','saddle_point'], "")
+    flags.DEFINE_enum('model', 'helix', ['helix','bike_accident','saddle_point','full_cube'], "")
     flags.DEFINE_integer('epochs', 3000, "")
     flags.DEFINE_integer('latent_dim', 3, "")
     flags.DEFINE_bool('save', False, "")
+    flags.DEFINE_bool('onnx', False, "to export the model in ONNX format")
     app.run(main)
