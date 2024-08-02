@@ -3,9 +3,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from absl import app, flags
+import time
+import numpy as np
 
 # we use GPU if available, otherwise CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = "cpu"
 
 class Generator(nn.Module):
   def __init__(self, sz_latent,sz_hidden,sz_out=2):
@@ -31,7 +34,10 @@ def main(argv):
     G.eval()
 
     gen_seed = (torch.FloatTensor(torch.randn(N_data,latent_dim))).to(device)
+    tps1 = time.time()
     fake_data = G( gen_seed ).detach().to("cpu")
+    tps2 = time.time()
+    print(f'temps inférence ({device}) {1000*(tps2 - tps1):4.2f} ms')
     if fake_data.shape[1]==2:
         plt.cla()
         plt.plot(fake_data[:,0],fake_data[:,1],'b.')
@@ -44,10 +50,16 @@ def main(argv):
         plt.show()
     else:
         print('!!! output data should be 2D or 3D (here dim={})'.format(fake_data.shape[1]))
-
+    
+    if len(FLAGS.save_np)>0:
+        from pathlib import Path
+        model_name = Path(FLAGS.model_path).stem
+        np.save(FLAGS.save_np+"_pytorch_data.npy",fake_data.numpy(force=True))
+    
 if __name__ == '__main__':
     FLAGS = flags.FLAGS
     # flags.DEFINE_enum('model', 'circle', ['circle', 'simple_sin', 'double_sin', 'unbalanced_xor'], "")
     flags.DEFINE_string('model_path',None,'path to the model file')
     flags.DEFINE_integer('N_data', 100, "number of point to generate")
+    flags.DEFINE_string('save_np', '', 'save points in numpy format in the file <VALUE>_pytorch_data.npy')
     app.run(main)

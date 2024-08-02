@@ -3,6 +3,7 @@ import aidge_backend_cpu ### indispensable, utilisé implicitement
 import aidge_onnx
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 model_name = "circle"
 onnx_filename = "model_G_"+model_name+".onnx"
@@ -29,7 +30,10 @@ model_G.set_backend("cpu")
 
 # Create a scheduler and run inference
 scheduler = aidge_core.SequentialScheduler(model_G)
+tps1 = time.time()
 scheduler.forward(verbose=True)
+tps2 = time.time()
+print(f'temps inférence (Aidge CPU) {1000*(tps2 - tps1):4.2f} ms')
 
 for outNode in model_G.get_output_nodes():
     output_aidge = np.array(outNode.get_operator().get_output(0))
@@ -37,3 +41,4 @@ for outNode in model_G.get_output_nodes():
     plt.title('Inference with Aidge')
     plt.show()
 
+np.save(model_name+"_aidge_data.npy",output_aidge)

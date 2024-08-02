@@ -4,6 +4,7 @@ import aidge_onnx
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import time
 
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection # dessin cube (ground truth)
 
@@ -52,6 +53,7 @@ latent_dim = 3 # il faut le savoir, info non stockée dans le modèle!
 x =np.random.randn(batch_size,latent_dim)
 # originellement: x = torch.FloatTensor(torch.randn(batch_size,latent_dim))
 # mais on n'a plus besoin de torch désormais!
+tps1 = time.time()
 input_tensor = aidge_core.Tensor(x)
 
 # Create Producer Node for the Graph
@@ -69,6 +71,8 @@ model_G.set_backend("cpu")
 # Create a scheduler and run inference
 scheduler = aidge_core.SequentialScheduler(model_G)
 scheduler.forward(verbose=True)
+tps2 = time.time()
+print(f'temps inférence (Aidge CPU) {1000*(tps2 - tps1):4.2f} ms')
 
 for outNode in model_G.get_output_nodes():
     output_aidge = np.array(outNode.get_operator().get_output(0))
@@ -81,3 +85,4 @@ for outNode in model_G.get_output_nodes():
     plt.title('Inference with Aidge')
     plt.show()
 
+np.save(model_name+"_aidge_data.npy",output_aidge)
