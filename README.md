@@ -46,9 +46,12 @@ conda activate aidge
 git clone --recursive https://gitlab.eclipse.org/eclipse/aidge/aidge.git
 cd aidge && pip install .
 
-# test￼
+# test
 python -c "import aidge_core; import aidge_backend_cpu; print(aidge_core.Tensor.get_available_backends())"
-
+```
+Pour les mesures en transport optimal:
+```bash
+ pip install geomloss
 ```
 
 ## TD 5: NLP et Tensorboard

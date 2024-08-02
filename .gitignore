@@ -7,6 +7,8 @@
 1_fizzbuzz/TD1_CS.*
 
 *.pth
+*.onnx
+*.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
