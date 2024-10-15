@@ -31,6 +31,7 @@ Transfert d'apprentissage entre ImageNet et un petit problème cible. Étude du 
 ```bash
 mamba activate cs_td
 mamba install scikit-learn
+pip install timm # huggingface models for computer vision
 ```
 
 ## TD 4: GAN
