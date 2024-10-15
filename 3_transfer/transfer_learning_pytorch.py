@@ -99,7 +99,7 @@ def evaluate(model, dataset):
 PRINT_LOSS = True
 def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10):
     for epoch in range(n_epochs): # à chaque epochs
-        print("EPOCH % i" % epoch)
+        print(f"EPOCH {epoch+1}")
         for i, data in enumerate(loader_train): # itère sur les minibatchs via le loader apprentissage
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device) # on passe les données sur CPU / GPU
@@ -150,7 +150,7 @@ train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10
 # évaluation
 my_net.train(False)
 loss, accuracy = evaluate(my_net, dataset_test)
-print("Accuracy (test): %.1f%%" % (100 * accuracy))
+print(f"Accuracy (test): {accuracy:.1%}")
 
 #===== Fine tuning =====
 
@@ -187,4 +187,4 @@ train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10
 # on ré-évalue les performances
 my_net.train(False)
 loss, accuracy = evaluate(my_net, dataset_test)
-print("Accuracy (test): %.1f%%" % (100 * accuracy))
+print(f"Accuracy (test): {accuracy:.1%}")
