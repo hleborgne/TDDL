@@ -42,7 +42,7 @@ pip install absl-py
 Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé (ou ajouter Aidge à l'environnement `cs_td`):
 ```
 mamba create --name aidge python=3.8
-mambaa activate aidge
+mamba activate aidge
 git clone --recursive https://gitlab.eclipse.org/eclipse/aidge/aidge.git
 cd aidge && pip install .
 
@@ -57,9 +57,9 @@ Pour les mesures en transport optimal:
 ## TD 5: NLP et Tensorboard
 
 ```bash
-conda activate cs_td
+mamba activate cs_td
 # python -m pip install -U torch - tb - profiler
 pip install -U torch -tb-profiler
 mamba install --name cs_td tensorboard
-mamba update --name cs_td tensorboard
+# mamba update --name cs_td tensorboard
 ```
