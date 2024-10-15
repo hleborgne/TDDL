@@ -1,5 +1,5 @@
 # TD DL
-Travaux dirigés de deep learning
+Travaux dirigés de deep learning. Il est conseillé de mettre en place un environement virtuel avec Mamba, à installer avec [Miniforge](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh)
 
 ## TD 1: Bases de PyTorch
 Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
@@ -14,10 +14,10 @@ Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnis
 
 
 ```bash
-conda create --name cs_td # python=3.11 en 2023
-conda activate cs_td2
-conda install pytorch torchvision pytorch-cuda=11.7 -c pytorch -c nvidia
-conda install -c conda-forge matplotlib
+mamba create --name cs_td
+mamba activate cs_td
+mamba install pytorch torchvision pytorch-cuda=11.8 -c pytorch -c nvidia # sept. 2024
+mamba install matplotlib
 ```
 
 Si vous avez une GPU, il faut préalablement installer les drivers NVIDIA (et redémarrer votre machine). Avec e.g. ubuntu 22.04:
@@ -29,20 +29,20 @@ sudo apt install nvidia-driver-535
 ## TD 3: transfer learning et finetuning
 Transfert d'apprentissage entre ImageNet et un petit problème cible. Étude du réglage fin du réseau.
 ```bash
-conda activate cs_td2
-conda install -c anaconda scikit-learn
+mamba activate cs_td
+mamba install scikit-learn
 ```
 
 ## TD 4: GAN
 Modèle génératif (GAN) sur exemples jouet
 ```bash
-conda activate cs_td2
-conda install -c anaconda absl-py 
+mamba activate cs_td
+pip install absl-py
 ```
-Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé (ou ajouter Aidge à l'environnement `cs_td2`):
+Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé (ou ajouter Aidge à l'environnement `cs_td`):
 ```
-conda create --name aidge python=3.8
-conda activate aidge
+mamba create --name aidge python=3.8
+mambaa activate aidge
 git clone --recursive https://gitlab.eclipse.org/eclipse/aidge/aidge.git
 cd aidge && pip install .
 
@@ -57,9 +57,9 @@ Pour les mesures en transport optimal:
 ## TD 5: NLP et Tensorboard
 
 ```bash
-conda activate cs_td2
+conda activate cs_td
 # python -m pip install -U torch - tb - profiler
 pip install -U torch -tb-profiler
-conda install -c conda-forge --name cs_td2 tensorboard
-conda update -c conda-forge --name cs_td2 tensorboard
+mamba install --name cs_td tensorboard
+mamba update --name cs_td tensorboard
 ```
