@@ -19,11 +19,11 @@ def fizz_buzz_encode(i):
     else:             return 0
 
 # données d'entraînement (X) et labels (Y)
-X=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])
+X=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)]))
 Y=torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()
 
 # données de test
-X_test=torch.FloatTensor([binary_encode(i, NUM_DIGITS) for i in range(1,101)])
+X_test=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(1,101)]))
 
 # nombre de neurones dans la couche cachée
 NUM_HIDDEN = 100
@@ -68,7 +68,7 @@ for epoch in range(10000):
     # calcul coût  (et affichage)
     loss = loss_fn( model(X), Y)
     if epoch%100 == 0:
-        print('epoch {} training loss {}'.format(epoch, loss.item()))
+        print('epoch {}\ttraining loss {:1.4f}'.format(epoch, loss.item()))
 
     # visualisation des résultats en cours d'apprentissage
     # (doit être fait sur l'ensemble de validation normalement)
@@ -90,7 +90,11 @@ print(output)
 
 # Sortie finale (calcul plus compact des predictions)
 Y_test_pred = model(X_test)
-predictions = zip(range(1, 101), list(Y_test_pred.max(1)[1].data.tolist()))
+predictions = zip(range(1, 101), Y_test_pred.max(1)[1].data.tolist())
 print("============== Final result ============")
 print ([fizz_buzz(i, x) for (i, x) in predictions])
+
+pred=Y_test_pred.max(1)[1].data.tolist()
+gt=[fizz_buzz_encode(i) for i in range(1,101)]
+print(f'{sum([i==j for i,j in zip(pred,gt)])} element are correct')
 

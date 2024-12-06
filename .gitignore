@@ -5,6 +5,7 @@
 6_nlp_scratch/README
 1_fizzbuzz/data/MNIST
 1_fizzbuzz/TD1_CS.*
+0_utils/data/MNIST
 
 *.pth
 *.onnx
