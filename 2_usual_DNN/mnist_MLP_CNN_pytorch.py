@@ -115,9 +115,9 @@ class CNNNet(nn.Module):
 
 # define model (choose MLP or CNN)
 is_cnn=False
-#model = RegSoftNet()
+model = RegSoftNet()
 #model = MLPNet()
-model = CNNNet(); is_cnn=True
+#model = CNNNet(); is_cnn=True
 
 model.to(device) # puts model on GPU / CPU
 
@@ -137,7 +137,7 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
         if batch_idx %100 ==0:
-            print('epoch {} batch {} [{}/{}] training loss: {}'.format(epoch,batch_idx,batch_idx*len(x),
+            print('epoch {:2d} batch {:3d} [{:5d}/{:5d}] training loss: {:0.4f}'.format(epoch,batch_idx,batch_idx*len(x),
                     len(train_loader.dataset),loss.item()))
     # testing
     model.eval()
@@ -157,10 +157,11 @@ for epoch in range(10):
             for i,j in zip(prediction,target):
                 confusion[i.to("cpu"),j.to("cpu")] += 1
     taux_classif = 100. * correct / len(test_loader.dataset)
-    print('Accuracy: {}/{} (tx {:.2f}%, err {:.2f}%)\n'.format(correct,
+    print('Accuracy: {}/{} (tx {:.2f}%, err {:.2f}%)'.format(correct,
      len(test_loader.dataset), taux_classif, 100.-taux_classif))
     torch.set_printoptions(sci_mode=False)
-    print(confusion)
+    print("Confusion matrix:")
+    print(confusion.int()) # or e.g print(confusion.to(torch.int16))
 
 # BONUS: save model to disk (for further inference)
 if is_cnn == True:
