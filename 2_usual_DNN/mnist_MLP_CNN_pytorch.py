@@ -161,7 +161,7 @@ for epoch in range(10):
      len(test_loader.dataset), taux_classif, 100.-taux_classif))
     torch.set_printoptions(sci_mode=False)
     print("Confusion matrix:")
-    print(confusion.int()) # or e.g print(confusion.to(torch.int16))
+    print(confusion.int().numpy()) # or e.g print(confusion.to(torch.int16))
 
 # BONUS: save model to disk (for further inference)
 if is_cnn == True:
