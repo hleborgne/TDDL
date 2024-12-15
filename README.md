@@ -7,12 +7,6 @@ Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
 - manipulation et visualisation d'un ensemble de données visuelles
 - apprentissage de portes logiques par un modèle neuronal
 
-Code pour [Tensorflow](https://www.tensorflow.org/) partiellement disponible mais non corrigé en TD.
-
-## TD 2: DNN classiques (MLP, CNN, (bi)LSTM
-Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP, un CNN et un (bi)LSTM
-
-
 ```bash
 mamba create --name cs_td
 mamba activate cs_td
@@ -26,8 +20,17 @@ ubuntu-drivers devices # --> liste des drivers disponibles
 sudo apt install nvidia-driver-535
 ```
 
+Code pour [Tensorflow](https://www.tensorflow.org/) partiellement disponible mais non corrigé en TD.
+
+## TD 2: DNN classiques: MLP, CNN, (bi)LSTM
+* Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP, un CNN et un (bi)LSTM
+* Visualaisation des *feature maps* d'un CNN
+* Calcul de l'occupationmémoire d'un modèle
+
 ## TD 3: transfer learning et finetuning
-Transfert d'apprentissage entre ImageNet et un petit problème cible. Étude du réglage fin du réseau.
+* Transfert d'apprentissage entre ImageNet et un petit problème cible. 
+* Étude du réglage fin (*fine tunig*) du réseau.
+
 ```bash
 mamba activate cs_td
 mamba install scikit-learn
@@ -35,7 +38,8 @@ pip install timm # huggingface models for computer vision
 ```
 
 ## TD 4: GAN
-Modèle génératif (GAN) sur exemples jouet
+* Modèle génératif (GAN) sur des nuages de points 2D et 3D
+* Inférence avec le framework de deep learning embarqué [Aidge](https://projects.eclipse.org/projects/technology.aidge)
 ```bash
 mamba activate cs_td
 pip install absl-py
