@@ -55,7 +55,7 @@ pip install .
 cd ../aidge_backend_cpu/
 pip install .
 
-# test
+# il faut re-charger l'environnement *aidge* puis tester avec
 python -c "import aidge_core; import aidge_backend_cpu; print(aidge_core.Tensor.get_available_backends())"
 ```
 Pour les mesures en transport optimal:
