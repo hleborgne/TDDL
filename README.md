@@ -36,24 +36,22 @@ NB: pyTorch ne maintient plus les packages conda.
 
 ## TD 3: transfer learning et finetuning
 * Transfert d'apprentissage entre ImageNet et un petit problème cible. 
-* Étude du réglage fin (*fine tunig*) du réseau.
+* Étude du réglage fin (*fine tuning*) du réseau.
 
 ```bash
-mamba activate cs_td
-mamba install scikit-learn
-pip install timm # huggingface models for computer vision
+uv pip install scikit-learn timm
 ```
+`timm` fournit des modèles de vision par ordinateur 
 
 ## TD 4: GAN
 * Modèle génératif (GAN) sur des nuages de points 2D et 3D
 * Inférence avec le framework de deep learning embarqué [Aidge](https://projects.eclipse.org/projects/technology.aidge)
 ```bash
-mamba activate cs_td
-pip install absl-py
+uv pip install absl-py
 ```
-Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé (ou ajouter Aidge à l'environnement `cs_td`):
+Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé:
 ```
-mamba create --name aidge python=3.8
+mamba create --name aidge python=3.9
 mamba activate aidge
 git clone --recursive https://gitlab.eclipse.org/eclipse/aidge/aidge.git
 cd aidge && pip install .
@@ -66,15 +64,12 @@ python -c "import aidge_core; import aidge_backend_cpu; print(aidge_core.Tensor.
 ```
 Pour les mesures en transport optimal:
 ```bash
- pip install geomloss
+uv pip install geomloss
 ```
 
 ## TD 5: NLP et Tensorboard
 
 ```bash
-mamba activate cs_td
-# python -m pip install -U torch - tb - profiler
-pip install -U torch -tb-profiler
-mamba install --name cs_td tensorboard
-# mamba update --name cs_td tensorboard
+uv pip install tensorboard
+# pip install -U torch -tb-profiler
 ```
