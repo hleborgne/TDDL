@@ -70,6 +70,5 @@ uv pip install geomloss
 ## TD 5: NLP et Tensorboard
 
 ```bash
-uv pip install tensorboard
-# pip install -U torch -tb-profiler
+uv pip install tensorboard torch-tb-profiler
 ```
