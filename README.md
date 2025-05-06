@@ -1,9 +1,11 @@
 # TD DL
-Travaux dirigés de deep learning. Il est conseillé de mettre en place un environement virtuel avec Mamba (à installer avec [Miniforge](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh)) ou préférentiellement [uv](https://docs.astral.sh/uv/) avec:
+Travaux dirigés de deep learning. Il est conseillé de mettre en place un environnement virtuel avec Mamba (à installer avec [Miniforge](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh)) ou préférentiellement [uv](https://docs.astral.sh/uv/) avec:
 
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
+NB: PyTorch [ne maintient plus](https://github.com/pytorch/pytorch/issues/138506) les packages conda depuis octobre 2024. Il reste possible d'utiliser des environnements conda/mamba et `pip`. De plus, il existe encore des [packages conda-forge de PyTorch](https://anaconda.org/conda-forge/pytorch) maintenus par la communauté.
+
 
 ## TD 1: Bases de PyTorch
 Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
@@ -22,17 +24,15 @@ Si vous avez une GPU, il faut préalablement installer les drivers NVIDIA (et re
 ubuntu-drivers devices # --> liste des drivers disponibles
 sudo apt install nvidia-driver-535
 ```
-puis (autre version de CUDA possible: cf/ )
+puis (ici avec CUDA 11.8; autres versions possibles sur [le site de PyTorch](https://pytorch.org/))
 ```
 uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 ```
 
-NB: pyTorch ne maintient plus les packages conda.
-
 ## TD 2: DNN classiques: MLP, CNN, (bi)LSTM
 * Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP, un CNN et un (bi)LSTM
-* Visualaisation des *feature maps* d'un CNN
-* Calcul de l'occupationmémoire d'un modèle
+* Visualisation des *feature maps* d'un CNN
+* Calcul de l'occupation mémoire d'un modèle
 
 ## TD 3: transfer learning et finetuning
 * Transfert d'apprentissage entre ImageNet et un petit problème cible. 
@@ -68,6 +68,8 @@ uv pip install geomloss
 ```
 
 ## TD 5: NLP et Tensorboard
+* apprentissage RNN et LSTM sur des mots (lettres)
+* monitoring avec tensorboard
 
 ```bash
 uv pip install tensorboard torch-tb-profiler
