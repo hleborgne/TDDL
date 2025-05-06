@@ -1,5 +1,9 @@
 # TD DL
-Travaux dirigés de deep learning. Il est conseillé de mettre en place un environement virtuel avec Mamba, à installer avec [Miniforge](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh)
+Travaux dirigés de deep learning. Il est conseillé de mettre en place un environement virtuel avec Mamba (à installer avec [Miniforge](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh)) ou préférentiellement [uv](https://docs.astral.sh/uv/) avec:
+
+```
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ## TD 1: Bases de PyTorch
 Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
@@ -8,19 +12,22 @@ Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
 - apprentissage de portes logiques par un modèle neuronal
 
 ```bash
-mamba create --name cs_td
-mamba activate cs_td
-mamba install pytorch torchvision pytorch-cuda=11.8 -c pytorch -c nvidia # sept. 2024
-mamba install matplotlib
+uv venv --python=3.11 # python version >= 3.9; une version trop récente peut poser problème pour certains projets (pas les TD)
+source .venv/bin/activate
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 ```
 
-Si vous avez une GPU, il faut préalablement installer les drivers NVIDIA (et redémarrer votre machine). Avec e.g. ubuntu 22.04:
+Si vous avez une GPU, il faut préalablement installer les drivers NVIDIA (et redémarrer votre machine). Avec e.g. ubuntu:
 ```
 ubuntu-drivers devices # --> liste des drivers disponibles
 sudo apt install nvidia-driver-535
 ```
+puis (autre version de CUDA possible: cf/ )
+```
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+```
 
-Code pour [Tensorflow](https://www.tensorflow.org/) partiellement disponible mais non corrigé en TD.
+NB: pyTorch ne maintient plus les packages conda.
 
 ## TD 2: DNN classiques: MLP, CNN, (bi)LSTM
 * Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP, un CNN et un (bi)LSTM
