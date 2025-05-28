@@ -17,6 +17,7 @@ Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
 uv venv --python=3.11 # python version >= 3.9; une version trop récente peut poser problème pour certains projets (pas les TD)
 source .venv/bin/activate
 uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+uv pip install matplotlib
 ```
 
 Si vous avez une GPU, il faut préalablement installer les drivers NVIDIA (et redémarrer votre machine). Avec e.g. ubuntu:
