@@ -1,5 +1,11 @@
 # TD DL
-Travaux dirigés de deep learning. Il est conseillé de mettre en place un environement virtuel avec Mamba, à installer avec [Miniforge](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh)
+Travaux dirigés de deep learning. Il est conseillé de mettre en place un environnement virtuel avec Mamba (à installer avec [Miniforge](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh)) ou préférentiellement [uv](https://docs.astral.sh/uv/) avec:
+
+```
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+NB: PyTorch [ne maintient plus](https://github.com/pytorch/pytorch/issues/138506) les packages conda depuis octobre 2024. Il reste possible d'utiliser des environnements conda/mamba et `pip`. De plus, il existe encore des [packages conda-forge de PyTorch](https://anaconda.org/conda-forge/pytorch) maintenus par la communauté.
+
 
 ## TD 1: Bases de PyTorch
 Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
@@ -8,46 +14,44 @@ Initiation à la syntaxe et aux bases de [PyTorch](https://pytorch.org/) avec:
 - apprentissage de portes logiques par un modèle neuronal
 
 ```bash
-mamba create --name cs_td
-mamba activate cs_td
-mamba install pytorch torchvision pytorch-cuda=11.8 -c pytorch -c nvidia # sept. 2024
-mamba install matplotlib
+uv venv --python=3.11 # python version >= 3.9; une version trop récente peut poser problème pour certains projets (pas les TD)
+source .venv/bin/activate
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 ```
 
-Si vous avez une GPU, il faut préalablement installer les drivers NVIDIA (et redémarrer votre machine). Avec e.g. ubuntu 22.04:
+Si vous avez une GPU, il faut préalablement installer les drivers NVIDIA (et redémarrer votre machine). Avec e.g. ubuntu:
 ```
 ubuntu-drivers devices # --> liste des drivers disponibles
 sudo apt install nvidia-driver-535
 ```
-
-Code pour [Tensorflow](https://www.tensorflow.org/) partiellement disponible mais non corrigé en TD.
+puis (ici avec CUDA 11.8; autres versions possibles sur [le site de PyTorch](https://pytorch.org/))
+```
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+```
 
 ## TD 2: DNN classiques: MLP, CNN, (bi)LSTM
 * Apprentissage de chiffres manuscrits sur [MNIST](http://yann.lecun.com/exdb/mnist/) avec un MLP, un CNN et un (bi)LSTM
-* Visualaisation des *feature maps* d'un CNN
-* Calcul de l'occupationmémoire d'un modèle
+* Visualisation des *feature maps* d'un CNN
+* Calcul de l'occupation mémoire d'un modèle
 
 ## TD 3: transfer learning et finetuning
 * Transfert d'apprentissage entre ImageNet et un petit problème cible. 
-* Étude du réglage fin (*fine tunig*) du réseau.
+* Étude du réglage fin (*fine tuning*) du réseau.
 
 ```bash
-mamba activate cs_td
-mamba install scikit-learn
-pip install timm # huggingface models for computer vision
+uv pip install scikit-learn timm
 ```
+`timm` fournit des modèles de vision par ordinateur 
 
 ## TD 4: GAN
 * Modèle génératif (GAN) sur des nuages de points 2D et 3D
 * Inférence avec le framework de deep learning embarqué [Aidge](https://projects.eclipse.org/projects/technology.aidge)
 ```bash
-mamba activate cs_td
-pip install absl-py
-pip install onnx # pour sauvegarde
+uv pip install absl-py onnx
 ```
-Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé (ou ajouter Aidge à l'environnement `cs_td`):
+Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé:
 ```
-mamba create --name aidge python=3.8
+mamba create --name aidge python=3.9
 mamba activate aidge
 git clone --recursive https://gitlab.eclipse.org/eclipse/aidge/aidge.git
 cd aidge && pip install .
@@ -60,15 +64,13 @@ python -c "import aidge_core; import aidge_backend_cpu; print(aidge_core.Tensor.
 ```
 Pour les mesures en transport optimal:
 ```bash
- pip install geomloss
+uv pip install geomloss
 ```
 
 ## TD 5: NLP et Tensorboard
+* apprentissage RNN et LSTM sur des mots (lettres)
+* monitoring avec tensorboard
 
 ```bash
-mamba activate cs_td
-# python -m pip install -U torch - tb - profiler
-pip install -U torch -tb-profiler
-mamba install --name cs_td tensorboard
-# mamba update --name cs_td tensorboard
+uv pip install tensorboard torch-tb-profiler
 ```
