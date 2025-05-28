@@ -43,6 +43,7 @@ pip install timm # huggingface models for computer vision
 ```bash
 mamba activate cs_td
 pip install absl-py
+pip install onnx # pour sauvegarde
 ```
 Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé (ou ajouter Aidge à l'environnement `cs_td`):
 ```
