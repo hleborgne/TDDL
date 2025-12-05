@@ -17,28 +17,27 @@ def binary_encode(i, num_digits):
 
 # creation verite terrain: [number, "fizz", "buzz", "fizzbuzz"]
 def fizz_buzz_encode(i):
-    if   i % 15 == 0: return 3
-    elif i % 5  == 0: return 2
-    elif i % 3  == 0: return 1
-    else:             return 0
+    # TODO return 0
+    # TODO return 1
+    # TODO return 2
+    # TODO return 3
 
 # données d'entraînement (X) et labels (Y)
-X=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)], axis=0))).to(device)
-Y=(torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()).to(device)
+X=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(TODO,TODO)], axis=0))).to(device)
+Y=(torch.LongTensor([fizz_buzz_encode(i) for i in range(TODO, TODO)]).squeeze()).to(device)
 
 # données de test
-X_test=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(1,101)], axis=0))).to(device)
+X_test=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(TODO, TODO)], axis=0))).to(device)
 
-# NB: np.stack(..., axis=0 ) is not strictly required, it allows to speedup the conversion to torch tensor.
 
 # nombre de neurones dans la couche cachée
 NUM_HIDDEN = 100
 
 # définition du MLP à 1 couche cachée (non linearite ReLU)
 model = torch.nn.Sequential(
-    torch.nn.Linear(NUM_DIGITS, NUM_HIDDEN),
+    torch.nn.Linear(TODO, NUM_HIDDEN),
     torch.nn.ReLU(),
-    torch.nn.Linear(NUM_HIDDEN, 4)
+    torch.nn.Linear(NUM_HIDDEN, TODO)
     )
 model.to(device) # puts model on GPU / CPU
 
@@ -50,7 +49,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr = 0.05)
 
 # affichage attendu par l'application
 def fizz_buzz(i, prediction):
-    return [str(i), "fizz", "buzz", "fizzbuzz"][prediction]
+    return [str(i), TODO, TODO, "fizzbuzz"][prediction]
 
 # on lance les calculs
 BATCH_SIZE = 128
@@ -75,7 +74,7 @@ for epoch in range(10000):
     # calcul coût  (et affichage)
     loss = loss_fn( model(X), Y)
     if epoch%100 == 0:
-        print('epoch {}\ttraining loss {:1.4f}'.format(epoch, loss.item()))
+        print('epoch {:5d}\ttraining loss {:1.4f}'.format(epoch, loss.item()))
 
     # visualisation des résultats en cours d'apprentissage
     # (doit être fait sur l'ensemble de validation normalement)
@@ -99,9 +98,4 @@ print(output)
 Y_test_pred = model(X_test)
 predictions = zip(range(1, 101), Y_test_pred.max(1)[1].data.tolist())
 print("============== Final result ============")
-print ([fizz_buzz(i, x) for (i, x) in predictions])
-
-pred=Y_test_pred.max(1)[1].data.tolist()
-gt=[fizz_buzz_encode(i) for i in range(1,101)]
-print(f'{sum([i==j for i,j in zip(pred,gt)])} element are correct')
-
+print ([ fizz_buzz (i , x ) for (i , x ) in predictions ])

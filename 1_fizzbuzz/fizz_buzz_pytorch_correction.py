@@ -5,6 +5,10 @@
 import numpy as np
 import torch
 
+# we use GPU if available, otherwise CPU
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(f'device is {device}')
+
 NUM_DIGITS = 10
 
 # codage binaire d'un chiffre (max NUM_DIGITS bits)
@@ -19,16 +23,10 @@ def fizz_buzz_encode(i):
     else:             return 0
 
 # données d'entraînement (X) et labels (Y)
-# (ci-dessous commenté, une méthode plus longue en passant par numpy)
-# trX = np.array([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])
-# trY = np.array([fizz_buzz_encode(i)          for i in range(101, 2 ** NUM_DIGITS)]).squeeze()
-# X = torch.from_numpy(trX).type(torch.FloatTensor)
-# Y = torch.from_numpy(trY) # type LongTensors as labels
-# ci-dessous pour "vieux" pytorch nécessitant [from torch.autograd import Variable]
-# X=Variable(X)
-# Y=Variable(Y)
-X_train=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)])) # le np.array() n'est pas indispensable mais accélère le process
-Y_train=torch.LongTensor(np.array([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)])).squeeze()
+X=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)], axis=0))).to(device)
+Y=(torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()).to(device)
+
+# NB: np.stack(..., axis=0 ) is not strictly required, it allows to speedup the conversion to torch tensor.
 
 # [exo 1.2] données de validation (méthode: tirage aléatoire du train initial)
 # [exo 2.2] ici on peut changer la taille de l'ensemble d'apprentissage
@@ -41,8 +39,7 @@ X_val,   Y_val   = X_train[0:NUM_VAL,:], Y_train[0:NUM_VAL]
 X_train, Y_train = X_train[NUM_VAL: ,:], Y_train[NUM_VAL:]
 
 # données de test
-X_test=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(1,101)]))
-raw_data_test = np.arange(1, 101) # valeurs de test
+X_test=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(1,101)], axis=0))).to(device)
 
 # nombre de neurones dans la couche cachée
 NUM_HIDDEN = 100 # [exo 2.2] valeur de la couche cachée
@@ -103,7 +100,7 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
 # Y_test_pred = model(X_test)
 # val, idx = torch.max(Y_test_pred,1)
 # ii=idx.data.numpy()
-# print( np.vectorize(fizz_buzz)(raw_data_test, ii) )
+# print( np.vectorize(fizz_buzz)(np.arange(1, 101), ii) )
 #
 ### Calcul plus compact des predictions
 Y_test_pred = model(X_test)
@@ -112,5 +109,5 @@ print("============== Final result ============")
 print ([fizz_buzz(i, x) for (i, x) in predictions])
 
 # [exo 1.1] Performances de test
-gtY = np.array([fizz_buzz_encode(i) for i in raw_data_test])
+gtY = np.array([fizz_buzz_encode(i) for i in np.arange(1, 101)])
 print("test perf: {:1.2f}".format(np.mean(gtY == Y_test_pred.max(1)[1].data.numpy())))
