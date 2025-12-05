@@ -5,6 +5,10 @@
 import numpy as np
 import torch
 
+# we use GPU if available, otherwise CPU
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(f'device is {device}')
+
 NUM_DIGITS = 10
 
 # codage binaire d'un chiffre (max NUM_DIGITS bits)
@@ -19,11 +23,13 @@ def fizz_buzz_encode(i):
     else:             return 0
 
 # données d'entraînement (X) et labels (Y)
-X=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)]))
-Y=torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()
+X=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)], axis=0))).to(device)
+Y=(torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()).to(device)
 
 # données de test
-X_test=torch.FloatTensor(np.array([binary_encode(i, NUM_DIGITS) for i in range(1,101)]))
+X_test=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(1,101)], axis=0))).to(device)
+
+# NB: np.stack(..., axis=0 ) is not strictly required, it allows to speedup the conversion to torch tensor.
 
 # nombre de neurones dans la couche cachée
 NUM_HIDDEN = 100
@@ -34,6 +40,7 @@ model = torch.nn.Sequential(
     torch.nn.ReLU(),
     torch.nn.Linear(NUM_HIDDEN, 4)
     )
+model.to(device) # puts model on GPU / CPU
 
 # fonction de coût 
 loss_fn = torch.nn.CrossEntropyLoss()
@@ -75,7 +82,7 @@ for epoch in range(10000):
     if(epoch%1000==0):
         Y_test_pred = model(X_test)
         val, idx = torch.max(Y_test_pred,1)
-        ii=idx.data.numpy()
+        ii=idx.data.cpu().numpy()
         # numbers = np.arange(1, 101)
         output = np.vectorize(fizz_buzz)(raw_data_test, ii)
         print(output)
@@ -83,7 +90,7 @@ for epoch in range(10000):
 # Sortie finale (calcul lisible)
 Y_test_pred = model(X_test)
 val, idx = torch.max(Y_test_pred,1)
-ii=idx.data.numpy()
+ii=idx.data.cpu().numpy()
 output = np.vectorize(fizz_buzz)(raw_data_test, ii)
 print("============== Final result ============")
 print(output)
