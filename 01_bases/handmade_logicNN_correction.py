@@ -37,10 +37,10 @@ def logicNN(X, t):  # X=data and t=target (labels)
 X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
 print("OR", logicNN(X, np.array([[0, 1, 1, 1]]).T))
-# # print("AND", logicNN(X, np.array([[0,0,0,1]]).T))
-# # print("XOR", logicNN(X, np.array([[0,1,1,0]]).T))
-# # print("NAND", logicNN(X, np.array([[1,1,1,0]]).T))
-# # print("NOR", logicNN(X, np.array([[1,0,0,0]]).T))
+# print("AND", logicNN(X, np.array([[0,0,0,1]]).T))
+# print("XOR", logicNN(X, np.array([[0,1,1,0]]).T))
+# print("NAND", logicNN(X, np.array([[1,1,1,0]]).T))
+# print("NOR", logicNN(X, np.array([[1,0,0,0]]).T))
 
 
 X = np.array([[0.1, 0.1], [0.2, 0.9], [0.8, 0.15], [0.85, 0.8]])
