@@ -64,7 +64,7 @@ def fizz_buzz(i, prediction):
 
 # on lance les calculs
 BATCH_SIZE = 128
-for epoch in range(1000):  # [exo 2.4] nombre d'itérations
+for epoch in range(10000):  # [exo 2.4] nombre d'itérations
     for start in range(0, len(X_train), BATCH_SIZE):
         end = start + BATCH_SIZE
         batchX = X_train[start:end]

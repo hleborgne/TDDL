@@ -23,8 +23,8 @@ def fizz_buzz_encode(i):
     # TODO return 3
 
 # données d'entraînement (X) et labels (Y)
-X=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(TODO,TODO)], axis=0))).to(device)
-Y=(torch.LongTensor([fizz_buzz_encode(i) for i in range(TODO, TODO)]).squeeze()).to(device)
+X_train=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(TODO,TODO)], axis=0))).to(device)
+Y_train=(torch.LongTensor([fizz_buzz_encode(i) for i in range(TODO, TODO)]).squeeze()).to(device)
 
 # données de test
 X_test=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(TODO, TODO)], axis=0))).to(device)
@@ -55,10 +55,10 @@ def fizz_buzz(i, prediction):
 BATCH_SIZE = 128
 raw_data_test = np.arange(1, 101) # valeurs de test
 for epoch in range(10000):
-    for start in range(0, len(X), BATCH_SIZE):
+    for start in range(0, len(X_train), BATCH_SIZE):
         end = start + BATCH_SIZE
-        batchX = X[start:end]
-        batchY = Y[start:end]
+        batchX = X_train[start:end]
+        batchY = Y_train[start:end]
 
         # prediction et calcul loss
         y_pred = model(batchX)

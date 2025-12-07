@@ -59,18 +59,18 @@ input_tensor = aidge_core.Tensor(x)
 # Create Producer Node for the Graph
 input_node = aidge_core.Producer(input_tensor, "X")
 # Configuration for input (optional)
-input_node.get_operator().set_datatype(aidge_core.DataType.Float32)
+input_node.get_operator().set_datatype(aidge_core.dtype.float32)
 input_node.get_operator().set_backend("cpu")
 #Link Producer to the Graph
 input_node.add_child(model_G)
 
 # Configure the model for inference
-model_G.set_datatype(aidge_core.DataType.Float32)
+model_G.set_datatype(aidge_core.dtype.float32)
 model_G.set_backend("cpu")
 
 # Create a scheduler and run inference
 scheduler = aidge_core.SequentialScheduler(model_G)
-scheduler.forward(verbose=True)
+scheduler.forward()
 tps2 = time.time()
 print(f'temps inférence (Aidge CPU) {1000*(tps2 - tps1):4.2f} ms')
 
