@@ -87,7 +87,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = torch.device("cpu") # forcer en CPU s'il y a des problèmes de mémoire GPU (+ être patient...)
 
 # on définit une fonction d'évaluation
-def evaluate(model, dataset):
+def evaluate(model, dataset, criterion):
     avg_loss = 0.
     avg_accuracy = 0
     loader = torch.utils.data.DataLoader(dataset, batch_size=16, shuffle=False, num_workers=2)
@@ -120,7 +120,7 @@ def train_model(model, loader_train, data_val, optimizer, criterion, n_epochs=10
             loss = criterion(outputs, labels) # on calcule la loss
             if PRINT_LOSS:
                 model.train(False)
-                loss_val, accuracy = evaluate(model, data_val)
+                loss_val, accuracy = evaluate(model, data_val, criterion)
                 model.train(True)
                 print("{} loss train: {:1.4f}\t val {:1.4f}\tAcc (val): {:.1%}".format(i, loss.item(), loss_val, accuracy))
                 if accuracy > best_accuracy:
@@ -163,7 +163,7 @@ my_best_net = train_model(my_net, loader_train, dataset_val, optimizer, criterio
 
 # évaluation
 my_best_net.train(False)
-loss, accuracy = evaluate(my_best_net, dataset_test)
+loss, accuracy = evaluate(my_best_net, dataset_test, criterion)
 print(f"Accuracy (test): {accuracy:.1%}")
 
 #===== Clean memory =====
@@ -214,5 +214,5 @@ my_best_net_ft = train_model(my_net_ft, loader_train, dataset_val, optimizer, cr
 
 # on ré-évalue les performances
 my_best_net_ft.train(False)
-loss, accuracy = evaluate(my_best_net_ft, dataset_test)
+loss, accuracy = evaluate(my_best_net_ft, dataset_test, criterion)
 print(f"Accuracy (test): {accuracy:.1%}")
