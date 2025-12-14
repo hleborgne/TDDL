@@ -84,7 +84,7 @@ class MLPNet(nn.Module):
         x = TODO
         return x
 
-
+# define CNN model
 NUM_CONV_1=TODO
 NUM_CONV_2=TODO
 NUM_FC=TODO

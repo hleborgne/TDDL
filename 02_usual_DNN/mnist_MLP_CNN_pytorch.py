@@ -89,6 +89,7 @@ class MLPNet(nn.Module):
         x = self.fc3(x)
         return x
 
+# define CNN model
 NUM_CONV_1=10 # try 32
 NUM_CONV_2=20 # try 64
 NUM_FC=500 # try 1024
