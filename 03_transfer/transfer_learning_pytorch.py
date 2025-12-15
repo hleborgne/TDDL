@@ -188,3 +188,6 @@ train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10
 my_net.train(False)
 loss, accuracy = evaluate(my_net, dataset_test)
 print(f"Accuracy (test): {accuracy:.1%}")
+
+torch.save(my_net.state_dict(), "trademark_rn18_ft.pth")
+
