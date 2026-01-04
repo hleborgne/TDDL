@@ -29,6 +29,7 @@ def fix_all_seeds ( seed ) :
         torch.cuda.manual_seed ( seed )
         torch.cuda.manual_seed_all ( seed )
         torch.use_deterministic_algorithms( True )# Normalisation des images pour les modèles pré-entraînés PyTorch
+        # il faut activer la variable d'environnement CUBLAS_WORKSPACE_CONFIG=:4096:8 ou CUBLAS_WORKSPACE_CONFIG=:16:8 (à mettre avant 'python transfer_learning_huggingface_vit.py')
 
 # voir: https://pytorch.org/docs/stable/torchvision/models.html
 # et ici pour les « explications » sur les valeurs exactes: https://github.com/pytorch/vision/issues/1439

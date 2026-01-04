@@ -140,7 +140,7 @@ for param in my_net.parameters():
     param.requires_grad = False
 
 # on remplace la dernière couche fully connected à 1000 sorties (classes d'ImageNet) par une fully connected à 6 sorties (nos classes).
-# par défaut, les gradients des paramètres cette couche seront bien calculés
+# par défaut, les gradients des paramètres de cette couche seront bien calculés
 my_net.fc = nn.Linear(in_features=my_net.fc.in_features, out_features=nb_classes, bias=True)
 # on pourrait aussi réinitaliser d'autres couches telle: my_net.layer4[1].conv2
 #  NB: par défaut, la couche réinitialisée a .requires_grad=True

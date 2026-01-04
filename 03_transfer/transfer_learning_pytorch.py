@@ -139,7 +139,7 @@ my_net.train(True) # pas indispensable ici, mais bonne pratique de façon géné
 # on définit une loss et un optimizer
 # on limite l'optimisation aux paramètres de la nouvelle couche
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(my_net.fc.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(my_net.fc.parameters(), lr=0.005, momentum=0.9)
 # optimizer = optim.Adam(my_net.fc.parameters(), lr=0.001, amsgrad = True)
 
 print("Apprentissage en transfer learning")
@@ -181,7 +181,7 @@ optimizer = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
 # on ré-entraîne
 print("Apprentissage avec fine-tuning")
 my_net.train(True)
-torch.manual_seed(42)
+torch.manual_seed(2)
 train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10)
 
 # on ré-évalue les performances
