@@ -13,7 +13,7 @@ model_name = "saddle_point"
 # model_name = "helix"
 
 #================================
-
+# to display ground truth of the cube
 def get_face_cube():
   faces = []
   for i in range(6):
