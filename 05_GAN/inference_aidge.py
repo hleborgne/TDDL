@@ -6,40 +6,34 @@ import numpy as np
 import time
 
 model_name = "circle"
-onnx_filename = "model_G_"+model_name+".onnx"
-model_G = aidge_onnx.load_onnx(onnx_filename)
+# model_name = "double_sin"
 
+
+#================================
+# load model
+model_G = aidge_onnx.load_onnx(f'model_G_{model_name}.onnx')
+
+# input data
 batch_size = 1000
 latent_dim = 2 # il faut le savoir, info non stockée dans le modèle!
-x =np.random.randn(batch_size,latent_dim)
-# originellement: x = torch.FloatTensor(torch.randn(batch_size,latent_dim))
-# mais on n'a plus besoin de torch désormais!
+x = np.random.randn(batch_size,latent_dim)
 input_tensor = aidge_core.Tensor(x)
 
-# Create Producer Node for the Graph
-input_node = aidge_core.Producer(input_tensor, "X")
-# Configuration for input (optional)
-#input_node.get_operator().set_datatype(aidge_core.DataType.Float32)
-input_node.get_operator().set_datatype(aidge_core.dtype.float32)
-input_node.get_operator().set_backend("cpu")
-#Link Producer to the Graph
-input_node.add_child(model_G)
-
 # Configure the model for inference
-model_G.set_datatype(aidge_core.dtype.float32)
-model_G.set_backend("cpu")
+model_G.compile("cpu", aidge_core.dtype.float32, dims=[[batch_size, 1, 1, 2]])
 
 # Create a scheduler and run inference
 scheduler = aidge_core.SequentialScheduler(model_G)
+
 tps1 = time.time()
-scheduler.forward()
+scheduler.forward(data=[input_tensor])
 tps2 = time.time()
 print(f'temps inférence (Aidge CPU) {1000*(tps2 - tps1):4.2f} ms')
 
-for outNode in model_G.get_output_nodes():
-    output_aidge = np.array(outNode.get_operator().get_output(0))
-    plt.plot(output_aidge[:,0],output_aidge[:,1],'b.')
-    plt.title('Inference with Aidge')
-    plt.show()
+output_aidge = np.array(list(model_G.get_output_nodes())[0].get_operator().get_output(0))
+plt.plot(output_aidge[:,0],output_aidge[:,1],'b.')
+plt.title('Inference with Aidge')
+plt.show()
 
 np.save(model_name+"_aidge_data.npy",output_aidge)
+
