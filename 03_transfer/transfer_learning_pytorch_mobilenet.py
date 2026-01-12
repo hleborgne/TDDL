@@ -47,7 +47,7 @@ print("Nombre d'images de test : %i" % len(samples_test))
 dataset_train = datasets.ImageFolder(image_directory, data_transforms)
 dataset_train.samples = samples_train
 dataset_train.imgs = samples_train
-loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=32, shuffle=True, num_workers=4)
+loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=8, shuffle=True, num_workers=4)
 
 dataset_val = datasets.ImageFolder(image_directory, data_transforms)
 dataset_val.samples = samples_val
@@ -154,9 +154,10 @@ print(f"Accuracy (test): {accuracy:.1%}")
 #===== clean GPU cache
 torch.cuda.empty_cache()
 # NB: cela nettoie le cache GPU, mais il y a une subtilité. En fait, toute variable qui n'est plus référencée
-#     dans la suite du programme. Aussi, en cas de problème mmémoire, pour "forcer" le nettoyage, il faut
+#     dans la suite du programme. Aussi, en cas de problème mémoire, pour "forcer" le nettoyage, il faut
 #     changer le nom de la variable 'my_net' (en 'my_net_ft' ici)
 
+# si cela n'est pas suffisant, vous pouvez diminuer batch_size
 #===== Fine tuning =====
 
 # on réinitialise MobileNet
