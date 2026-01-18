@@ -16,11 +16,11 @@ confusion = torch.zeros(n_categories, n_categories)
 
 # load model
 if model == 'lstm':
-    rnn = torch.load('char-lstm-classification.pt')
+    rnn = torch.load('char-lstm-classification.pt',weights_only=False)
 elif model == 'rnn':
-    rnn = torch.load('char-rnn-classification.pt')
+    rnn = torch.load('char-rnn-classification.pt',weights_only=False)
 elif model == 'rnn-adam':
-    rnn = torch.load('char-rnn-adam-classification.pt')
+    rnn = torch.load('char-rnn-adam-classification.pt',weights_only=False)
 
 # return a prediction given a name
 def evaluate(line_tensor):
@@ -63,8 +63,12 @@ cax = ax.matshow(confusion.numpy())
 fig.colorbar(cax)
 
 # Set up axes
-ax.set_xticklabels([''] + all_categories, rotation=90)
-ax.set_yticklabels([''] + all_categories)
+ax.xaxis.set_ticks(range(len(all_categories)))
+ax.yaxis.set_ticks(range(len(all_categories)))
+ax.set_xticklabels(all_categories, rotation=90)
+ax.set_yticklabels(all_categories)
+# ax.set_xticklabels([''] + all_categories, rotation=90)
+# ax.set_yticklabels([''] + all_categories)
 
 # Force label at every tick
 ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
