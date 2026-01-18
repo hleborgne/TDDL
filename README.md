@@ -52,13 +52,14 @@ uv pip install absl-py onnx
 ```
 Pour l'inférence avec le framework [Aidge](https://projects.eclipse.org/projects/technology.aidge) on peut installer un environnement séparé:
 ```
-mamba create --name aidge python=3.9
-mamba activate aidge
-git clone --recursive https://gitlab.eclipse.org/eclipse/aidge/aidge.git
-cd aidge && pip install .
-cd aidge/aidge_core && pip install .
-cd ../aidge_backend_cpu/ && pip install .
-cd ../aidge_onnx/ && pip install .
+git clone https://gitlab.eclipse.org/eclipse/aidge/aidge.git
+cd  aidge
+uv venv --python 3.11
+source .venv/bin/activate
+uv pip install -r default_module_install.txt
+uv pip install aidge-core aidge-backend-cpu
+uv pip install PyQt5 # PyQt6 en Python 3.12
+
 
 # il faut re-charger l'environnement *aidge* puis tester avec
 python -c "import aidge_core; import aidge_backend_cpu; print(aidge_core.Tensor.get_available_backends())"
