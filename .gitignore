@@ -4,6 +4,7 @@ tmp/*
 06_nlp_scratch/README
 01_bases/data/MNIST
 00_utils/data/MNIST
+07_transformer/README
 
 *.pth
 *.pt

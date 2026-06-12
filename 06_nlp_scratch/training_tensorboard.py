@@ -8,7 +8,7 @@ import time
 from torch.utils.tensorboard import SummaryWriter
 
 # log_directory for tensorboard
-tb_writer = SummaryWriter('log/nlp_scratch_exp_1')
+tb_writer = SummaryWriter('log/nlp_scratch_exp_1a')
 
 ### get training data
 datapath='data/names/'
@@ -25,7 +25,7 @@ model_net = RNN(n_letters, n_hidden, n_categories)
 
 ### Tensorboard visualization of the network
 # - create (any valid) input data
-# - visualize the built model in tensorboeard
+# - visualize the built model in tensorboard
 category, line, category_tensor, line_tensor = randomTrainingExample(all_categories,train_data)
 hidden = model_net.initHidden()
 tb_writer.add_graph(model_net, (line_tensor[0], hidden  ))
