@@ -12,8 +12,12 @@ print(f'device is {device}')
 NUM_DIGITS = 10
 
 # codage binaire d'un chiffre (max NUM_DIGITS bits)
-def binary_encode(i, num_digits):
-    return np.array([i >> d & 1 for d in range(num_digits)])
+# def binary_encode(i, num_digits):
+#     return [i >> d & 1 for d in range(num_digits)]
+#     # return np.array([i >> d & 1 for d in range(num_digits)])
+
+def binary_encode(n, num_digits):
+    return [int(b) for b in format(n, f'0{num_digits}b')]
 
 # creation verite terrain: [number, "fizz", "buzz", "fizzbuzz"]
 def fizz_buzz_encode(i):
@@ -23,10 +27,12 @@ def fizz_buzz_encode(i):
     else:             return 0
 
 # données d'entraînement (X) et labels (Y)
-X=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)], axis=0))).to(device)
-Y=(torch.LongTensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)]).squeeze()).to(device)
-
+X=(torch.tensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)], axis=0), dtype = torch.float32)).to(device)
+Y=torch.tensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)], dtype=torch.long).to(device)
 # NB: np.stack(..., axis=0 ) is not strictly required, it allows to speedup the conversion to torch tensor.
+# X = torch.tensor([binary_encode(i, NUM_DIGITS) for i in range(101, 2 ** NUM_DIGITS)], dtype = torch.float32).to(device)
+# Y=torch.tensor([fizz_buzz_encode(i) for i in range(101, 2 ** NUM_DIGITS)], dtype=torch.long).to(device)
+
 
 # [exo 1.2] données de validation (méthode: tirage aléatoire du train initial)
 # [exo 2.2] ici on peut changer la taille de l'ensemble d'apprentissage
@@ -39,7 +45,8 @@ X_val,   Y_val   = X_train[0:NUM_VAL,:], Y_train[0:NUM_VAL]
 X_train, Y_train = X_train[NUM_VAL: ,:], Y_train[NUM_VAL:]
 
 # données de test
-X_test=(torch.FloatTensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(1,101)], axis=0))).to(device)
+X_test=(torch.tensor(np.stack([binary_encode(i, NUM_DIGITS) for i in range(1, 101)], axis=0), dtype = torch.float32)).to(device)
+# X_test = torch.tensor([binary_encode(i, NUM_DIGITS) for i in range(1, 101)], dtype = torch.float32).to(device)
 
 # nombre de neurones dans la couche cachée
 NUM_HIDDEN = 100 # [exo 2.2] valeur de la couche cachée
@@ -105,8 +112,9 @@ for epoch in range(10000):  # [exo 2.4] nombre d'itérations
 # print( np.vectorize(fizz_buzz)(np.arange(1, 101), ii) )
 #
 ### Calcul plus compact des predictions
-Y_test_pred = model(X_test)
-predictions = zip(range(1, 101), list(Y_test_pred.max(1)[1].data.tolist()))
+with torch.no_grad(): # avoid gradient calculation (use less memory and safer for inference)
+    Y_test_pred = model(X_test)
+    predictions = zip(range(1, 101), list(Y_test_pred.max(1)[1].data.tolist()))
 print("============== Final result ============")
 print ([fizz_buzz(i, x) for (i, x) in predictions])
 

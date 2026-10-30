@@ -87,15 +87,17 @@ for epoch in range(10000):
         print(output)
 
 # Sortie finale (calcul lisible)
-Y_test_pred = model(X_test)
-val, idx = torch.max(Y_test_pred,1)
-ii=idx.data.cpu().numpy()
-output = np.vectorize(fizz_buzz)(raw_data_test, ii)
-print("============== Final result ============")
-print(output)
+with torch.no_grad():
+    Y_test_pred = model(X_test)
+    val, idx = torch.max(Y_test_pred,1)
+    ii=idx.data.cpu().numpy()
+    output = np.vectorize(fizz_buzz)(raw_data_test, ii)
+    print("============== Final result ============")
+    print(output)
 
 # Sortie finale (calcul plus compact des predictions)
-Y_test_pred = model(X_test)
-predictions = zip(range(1, 101), Y_test_pred.max(1)[1].data.tolist())
-print("============== Final result ============")
-print ([ fizz_buzz (i , x ) for (i , x ) in predictions ])
+with torch.no_grad():
+    Y_test_pred = model(X_test)
+    predictions = zip(range(1, 101), Y_test_pred.max(1)[1].data.tolist())
+    print("============== Final result ============")
+    print ([ fizz_buzz (i , x ) for (i , x ) in predictions ])
