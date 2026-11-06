@@ -182,7 +182,7 @@ if __name__ == "__main__":
     # on ré-entraîne
     print("Apprentissage avec fine-tuning")
     my_net.train(True)
-    torch.manual_seed(2)
+    torch.manual_seed(42)
     train_model(my_net, loader_train, dataset_val, optimizer, criterion, n_epochs=10)
 
     # on ré-évalue les performances
